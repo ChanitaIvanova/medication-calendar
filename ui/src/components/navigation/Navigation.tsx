@@ -5,15 +5,16 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import { useUser } from '../../context/UserContext';
-
+import { useNavigate } from 'react-router-dom';
 
 function Navigation(): JSX.Element {
     const { user, setUser, clearUser } = useUser();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await fetch('/api/auth/user_id', {
+                const response = await fetch('/api/auth/user', {
                     method: 'GET',
                     credentials: 'include', // This is important for including cookies
                 });
@@ -80,28 +81,38 @@ function Navigation(): JSX.Element {
                                     color="primary"
                                     variant="text"
                                     size="small"
-                                    href="/"
+                                    onClick={() => navigate('/')}
                                 >
                                     Home
                                 </Button>
                             </Box>
                             <Box>
                                 {user ? (
-                                    <Button
-                                        color="primary"
-                                        variant="text"
-                                        size="small"
-                                        onClick={logout}
-                                    >
-                                        Logout
-                                    </Button>
+                                    <>
+                                        <Button
+                                            color="primary"
+                                            variant="text"
+                                            size="small"
+                                            onClick={() => navigate('/profile')}
+                                        >
+                                            Profile
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            variant="text"
+                                            size="small"
+                                            onClick={logout}
+                                        >
+                                            Logout
+                                        </Button>
+                                    </>
                                 ) : (
                                     <>
                                         <Button
                                             color="primary"
                                             variant="text"
                                             size="small"
-                                            href="/login"
+                                            onClick={() => navigate('/login')}
                                         >
                                             Log In
                                         </Button>
@@ -109,7 +120,7 @@ function Navigation(): JSX.Element {
                                             color="primary"
                                             variant="text"
                                             size="small"
-                                            href="/sign-up"
+                                            onClick={() => navigate('/sign-up')}
                                         >
                                             Sign Up
                                         </Button>

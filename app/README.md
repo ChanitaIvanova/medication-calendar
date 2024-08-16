@@ -1,8 +1,11 @@
 Create venv 
-python -m venv venv
+python3.12 -m venv venv
 
 Use venv
 source venv/bin/activate
+
+Deactivate venv
+deactivate
 
 Install nginx - https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-open-source/
 

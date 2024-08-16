@@ -16,7 +16,6 @@ class Users:
     def add(user: User):
         collection = Users.__get_collection()
         user.password = PasswordEncoder.encode_password(user.password)
-        print(user.password)
         result = collection.insert_one(user.asdict())
         user.set_id(result.inserted_id)
         print(f"Inserted user with ID: {result.inserted_id}")
@@ -56,3 +55,22 @@ class Users:
         if user:
             return User(**user)
         return None
+
+    @staticmethod
+    def find_by_email(email):
+        collection = Users.__get_collection()
+        user = collection.find_one({"email": email})
+        if user:
+            return User(**user)
+        return None
+
+    @staticmethod
+    def find_existing_user(email, username):
+        collection = Users.__get_collection()
+        existing_user = collection.find_one({
+            "$or": [
+                {"email": email},
+                {"username": username}
+            ]
+        })
+        return existing_user
