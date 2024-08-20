@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source the configuration file
-source ./config.conf
+source ./config.local.conf
 
 # Add NPM_PATH to the PATH environment variable
 export PATH=$PATH:$NPM_PATH
