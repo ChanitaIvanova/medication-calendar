@@ -1,5 +1,4 @@
 from db.mongo_db_client import MongoDBClient
-from model.user import User
 from bson.objectid import ObjectId
 
 class CollectionWrapper:

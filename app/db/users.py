@@ -1,5 +1,5 @@
 from db.mongo_db_client import MongoDBClient
-from model.user import User
+from model.user_model import UserModel
 from db.collection_wrapper import CollectionWrapper
 from bson.objectid import ObjectId
 from services.password_encoder import PasswordEncoder
@@ -13,7 +13,7 @@ class Users:
         return collection;
 
     @staticmethod
-    def add(user: User):
+    def add(user: UserModel):
         collection = Users.__get_collection()
         user.password = PasswordEncoder.encode_password(user.password)
         result = collection.insert_one(user.asdict())
@@ -25,13 +25,13 @@ class Users:
     def find(id):
         collection = Users.__get_collection()
         data = collection.find_by_id(id)
-        return User(**data)
+        return UserModel(**data)
         
     @staticmethod
     def update_useremail(id, email):
         collection = Users.__get_collection()
         data = collection.find_by_id(id)
-        user = User(**data)
+        user = UserModel(**data)
         print(f"Found user: {user}")
         user.email = email
         collection.update_by_id(id, user.asdict())
@@ -53,7 +53,7 @@ class Users:
         collection = Users.__get_collection()
         user = collection.find_one({"username": username})
         if user:
-            return User(**user)
+            return UserModel(**user)
         return None
 
     @staticmethod
@@ -61,7 +61,7 @@ class Users:
         collection = Users.__get_collection()
         user = collection.find_one({"email": email})
         if user:
-            return User(**user)
+            return UserModel(**user)
         return None
 
     @staticmethod

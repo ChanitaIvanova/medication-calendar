@@ -1,4 +1,4 @@
-from model.user import User
+from model.user_model import UserModel
 from db.users import Users
 from flask import jsonify, request, make_response, redirect, url_for, flash, session
 from services.password_encoder import PasswordEncoder
@@ -39,7 +39,7 @@ class UsersController:
             else:
                 return make_response(jsonify({"error": "Username already exists"}), 400)
         try:
-            user = User(**data)
+            user = UserModel(**data)
             user.email = email
             added_user = Users.add(user)
             return make_response(jsonify({"inserted_id": str(added_user._id)}), 201)

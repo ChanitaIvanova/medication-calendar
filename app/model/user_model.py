@@ -3,7 +3,7 @@ from flask_login import UserMixin
 from .roles import Role
 
 @dataclass
-class User(UserMixin):
+class UserModel(UserMixin):
     _id: str
     id: str
     username: str
