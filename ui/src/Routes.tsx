@@ -5,6 +5,7 @@ import Login from './components/login/Login';
 import SignUp from './components/sign-up/SignUp';
 import Profile from './components/profile/Profile';
 import App from './App';
+import Medication from './components/medicine/Medication';
 
 const routes = createBrowserRouter([
     {
@@ -22,6 +23,10 @@ const routes = createBrowserRouter([
             {
                 path: "profile",
                 element: <Profile />,
+            },
+            {
+                path: "new-medication",
+                element: <Medication />,
             }
         ],
     }

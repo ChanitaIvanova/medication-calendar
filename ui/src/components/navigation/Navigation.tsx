@@ -85,6 +85,16 @@ function Navigation(): JSX.Element {
                                 >
                                     Home
                                 </Button>
+                                {user && (
+                                    <Button
+                                        color="primary"
+                                        variant="text"
+                                        size="small"
+                                        onClick={() => navigate('/new-medication')}
+                                    >
+                                        New Medication
+                                    </Button>
+                                )}
                             </Box>
                             <Box>
                                 {user ? (
