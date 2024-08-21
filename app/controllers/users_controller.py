@@ -84,7 +84,7 @@ class UsersController:
                 user_logged_in = login_user(user)
                 if user_logged_in:
                     return (
-                        jsonify({"user_id": str(user.id), "username": user.username}),
+                        jsonify({"user_id": str(user.id), "username": user.username, "email": user.email}),
                         200,
                     )
                 else:

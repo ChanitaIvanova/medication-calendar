@@ -34,7 +34,7 @@ def protected():
 @login_required
 def get_user_id():
     if current_user.is_authenticated:
-        return jsonify({"user_id": str(current_user.id), "username": current_user.username }), 200
+        return jsonify({"user_id": str(current_user.id), "username": current_user.username, "email": current_user.email }), 200
     else:
         return jsonify({"error": "User not logged in"}), 401
 
