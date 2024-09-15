@@ -26,7 +26,7 @@ const Medicine: React.FC = () => {
         headers: { 'Content-Type': 'application/json' }
       };
     } else {
-      endpoint = '/api/medicine/file';
+      endpoint = '/api/medications/medication/upload';
       payload = new FormData();
       payload.append('file', data as File);
     }

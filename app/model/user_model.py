@@ -1,9 +1,10 @@
 from dataclasses import dataclass, asdict
 from flask_login import UserMixin
 from .roles import Role
+from .base_model import BaseModel  # Import the BaseModel
 
 @dataclass
-class UserModel(UserMixin):
+class UserModel(UserMixin, BaseModel):  # Inherit from BaseModel
     _id: str
     id: str
     username: str

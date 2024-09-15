@@ -48,19 +48,15 @@ class UsersController:
 
     def get_users(self):
         users = Users.findAll()
+        users_dict = []
         for user in users:
-            user["_id"] = str(
-                user["_id"]
-            )  # Convert ObjectId to string for JSON serialization
-        return jsonify(users)
+            users_dict.append(user.to_json())
+        return jsonify(users_dict)
 
     def get_user(self, user_id):
         user = Users.find(user_id)
         if user:
-            user["_id"] = str(
-                user["_id"]
-            )  # Convert ObjectId to string for JSON serialization
-            return jsonify(user)
+            return user.to_json()
         return make_response(jsonify({"error": "user not found"}), 404)
 
     def update_user_email(self, user_id, email):

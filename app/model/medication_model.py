@@ -1,8 +1,8 @@
 from dataclasses import dataclass, asdict
-
+from .base_model import BaseModel
 
 @dataclass
-class MedicationModel:
+class MedicationModel(BaseModel):
     id: str
     user_id: str
     name: str
