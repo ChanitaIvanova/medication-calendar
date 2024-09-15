@@ -6,6 +6,7 @@ import SignUp from './components/sign-up/SignUp';
 import Profile from './components/profile/Profile';
 import App from './App';
 import Medication from './components/medication/Medication';
+import MedicationList from './components/medication/MedicationList';
 
 const routes = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const routes = createBrowserRouter([
             {
                 path: "profile",
                 element: <Profile />,
+            },
+            {
+                path: "medications",
+                element: <MedicationList />,
             },
             {
                 path: "new-medication",

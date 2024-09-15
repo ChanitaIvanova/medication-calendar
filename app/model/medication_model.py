@@ -19,9 +19,11 @@ class MedicationModel(BaseModel):
         side_effects: str,
         dosage_schedule: str,
         user_id: str,
-        id=-1,
+        _id=-1,
+        id=-1
     ):
-        self.id = id
+        self._id = _id
+        self.id = _id
         self.user_id = user_id
         self.name = name
         self.contents = contents
@@ -37,8 +39,7 @@ class MedicationModel(BaseModel):
 
     def asdict(self):
         dictionary = asdict(self)
-        dictionary.pop("id", None)
-        print(dictionary)
+        dictionary.update({'id': str(self._id)})
         return dictionary
 
     def print(self):

@@ -79,8 +79,8 @@ stop_processes() {
     fi
 }
 
-# Keep the script running
-wait $FLASK_PID $VITE_PID
-
 # Set up trap to stop all processes when the script is terminated
 trap 'stop_processes' EXIT INT TERM
+
+# Keep the script running
+wait $FLASK_PID $VITE_PID

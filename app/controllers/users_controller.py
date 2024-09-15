@@ -3,7 +3,6 @@ from db.users import Users
 from flask import jsonify, request, make_response, redirect, url_for, flash, session
 from services.password_encoder import PasswordEncoder
 from flask_login import login_user, logout_user
-from model.roles import Role
 from pydantic import ValidationError, EmailStr
 from typing import Dict
 from email_validator import validate_email, EmailNotValidError

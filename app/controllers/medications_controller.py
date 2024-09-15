@@ -5,6 +5,7 @@ from typing import Dict
 from flask_login import current_user
 from services.medication_service import MedicationService
 from injector import inject
+import json
 
 class MedicationsController:
     
@@ -21,9 +22,17 @@ class MedicationsController:
         data: Dict = self.medication_service.parse_medication_data(file)
         return self.__create_medication(data)
 
-    def get_medications_for_user(self, user_id):
-        medications = Medications.find_by_user_id(user_id)
-        return jsonify(medications)
+    def get_medications_for_user(self, page, per_page, sort_field=None, sort_direction=None, **filters):
+        user_id = str(current_user.id)
+        total_count, medications = Medications.find_by_user_id(
+            user_id, page, per_page, sort_field, sort_direction, filters
+        )
+        return jsonify({
+            'medications': [json.loads(MedicationModel(**med).to_json()) for med in medications],
+            'total_count': total_count,
+            'page': page,
+            'per_page': per_page
+        })
 
     def get_medication(self, medication_id):
         medication = Medications.find(medication_id)

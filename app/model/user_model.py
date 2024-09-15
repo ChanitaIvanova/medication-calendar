@@ -31,7 +31,6 @@ class UserModel(UserMixin, BaseModel):  # Inherit from BaseModel
         dictionary.pop('_id', None)
         dictionary.pop('id', None)
         dictionary['role'] = self.role.value
-        print(dictionary)
         return dictionary
     
     def has_role(self, role: Role):
