@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper } from '@mui/material';
-import { DataGrid, GridColDef, GridSortModel, GridFilterModel, GridFilterInputValue } from '@mui/x-data-grid';
+import { Box, Typography, Paper, Button } from '@mui/material';
+import { DataGrid, GridColDef, GridSortModel, GridFilterModel, GridFilterInputValue, GridRowSelectionModel } from '@mui/x-data-grid';
 import { useTheme, useMediaQuery } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 interface Medication {
   id: string;
@@ -91,6 +95,9 @@ function MedicationList() {
   const [filterModel, setFilterModel] = useState<GridFilterModel>({
     items: [],
   });
+  const [selectedMedication, setSelectedMedication] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -137,6 +144,27 @@ function MedicationList() {
     }
   };
 
+  const handleDelete = async () => {
+    if (selectedMedication) {
+      try {
+        const response = await fetch(`/api/medications/medication/${selectedMedication}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+        if (response.ok) {
+          fetchMedications();
+          setDeleteDialogOpen(false);
+          setSelectedMedication(null);
+          setRowSelectionModel([]);
+        } else {
+          console.error('Failed to delete medication');
+        }
+      } catch (error) {
+        console.error('Error deleting medication:', error);
+      }
+    }
+  };
+
   const getVisibleColumns = () => {
     if (isMobile) {
       return columns.filter(col => col.field === 'name');
@@ -149,6 +177,29 @@ function MedicationList() {
       <Typography variant="h4" gutterBottom>
         Your Medications
       </Typography>
+      <Box sx={{ mb: 2 }}>
+        <Button
+          startIcon={<VisibilityIcon />}
+          disabled={!selectedMedication}
+          onClick={() => console.log('View', selectedMedication)}
+        >
+          View
+        </Button>
+        <Button
+          startIcon={<EditIcon />}
+          disabled={!selectedMedication}
+          onClick={() => console.log('Edit', selectedMedication)}
+        >
+          Edit
+        </Button>
+        <Button
+          startIcon={<DeleteIcon />}
+          disabled={!selectedMedication}
+          onClick={() => setDeleteDialogOpen(true)}
+        >
+          Delete
+        </Button>
+      </Box>
       <Paper sx={{ flexGrow: 1, width: '100%', height: "100%", overflow: 'hidden' }}>
         <DataGrid
           autoHeight
@@ -166,7 +217,12 @@ function MedicationList() {
           filterMode="server"
           onFilterModelChange={(newFilterModel) => setFilterModel(newFilterModel)}
           loading={loading}
-          disableSelectionOnClick
+          checkboxSelection={false}
+          onRowSelectionModelChange={(newRowSelectionModel) => {
+            setRowSelectionModel(newRowSelectionModel);
+            setSelectedMedication(newRowSelectionModel[0] as string | null);
+          }}
+          rowSelectionModel={rowSelectionModel}
           getRowHeight={() => 'auto'}
           getEstimatedRowHeight={() => 200}
           initialState={{
@@ -186,6 +242,21 @@ function MedicationList() {
           }}
         />
       </Paper>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this medication?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDelete} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

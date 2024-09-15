@@ -44,3 +44,9 @@ def get_medications(medications_controller: MedicationsController):
     filters = {k: v for k, v in filters.items() if v is not None}
 
     return medications_controller.get_medications_for_user(page, per_page, sort_field, sort_direction, **filters)
+
+@medications.route('/medication/<medication_id>', methods=['DELETE'])
+@login_required
+@inject
+def delete_medication(medication_id: str, medications_controller: MedicationsController):
+    return medications_controller.delete_medication(medication_id)
