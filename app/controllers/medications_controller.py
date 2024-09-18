@@ -64,3 +64,26 @@ class MedicationsController:
         
         saved_medication = Medications.add(medication)
         return saved_medication.to_json(), 201
+
+    def update_medication(self, medication_id):
+        data: Dict = request.get_json()
+        user_id = str(current_user.id)
+        
+        medication = Medications.find(medication_id)
+        if not medication or medication.user_id != user_id:
+            return make_response(jsonify({"error": "Medication not found or unauthorized"}), 404)
+        
+        updated_medication = MedicationModel(
+            name=data['name'],
+            contents=data['contents'],
+            objective=data['objective'],
+            side_effects=data['sideEffects'],
+            dosage_schedule=data['dosageSchedule'],
+            user_id=user_id,
+            _id=medication_id
+        )
+        
+        result = Medications.update(updated_medication)
+        if result.modified_count:
+            return jsonify({"message": "Medication updated successfully"}), 200
+        return make_response(jsonify({"error": "Failed to update medication"}), 500)

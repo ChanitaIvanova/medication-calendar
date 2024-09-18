@@ -61,3 +61,11 @@ class Medications:
     def findAll():
         collection = Medications.__get_collection()
         return list(collection.find())
+
+    @staticmethod
+    def update(medication: MedicationModel):
+        collection = Medications.__get_collection()
+        return collection.update_one(
+            {"_id": ObjectId(medication.get_id())},
+            {"$set": medication.asdict()}
+        )

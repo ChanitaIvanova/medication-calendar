@@ -7,22 +7,34 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import {MedicationFormData} from './Medication'
+import { MedicationFormData } from './Medication';
 
 interface MedicationFormProps {
   onSubmit: (data: MedicationFormData | File) => void;
-  onToggleChange: (isManual: boolean) => void;
+  onToggleChange?: (isManual: boolean) => void;
   isManualInput: boolean;
+  initialData?: MedicationFormData;
+  submitButtonText?: string;
+  hideToggle?: boolean;
 }
 
-const MedicineForm: React.FC<MedicationFormProps> = ({ onSubmit, onToggleChange, isManualInput }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    contents: '',
-    objective: '',
-    sideEffects: '',
-    dosageSchedule: '',
-  });
+const MedicationForm: React.FC<MedicationFormProps> = ({
+  onSubmit,
+  onToggleChange,
+  isManualInput,
+  initialData,
+  submitButtonText = "Submit",
+  hideToggle = false,
+}) => {
+  const [formData, setFormData] = useState<MedicationFormData>(
+    initialData || {
+      name: '',
+      contents: '',
+      objective: '',
+      sideEffects: '',
+      dosageSchedule: '',
+    }
+  );
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -35,7 +47,9 @@ const MedicineForm: React.FC<MedicationFormProps> = ({ onSubmit, onToggleChange,
   };
 
   const handleToggleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onToggleChange(event.target.checked);
+    if (onToggleChange) {
+      onToggleChange(event.target.checked);
+    }
   };
 
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -47,10 +61,12 @@ const MedicineForm: React.FC<MedicationFormProps> = ({ onSubmit, onToggleChange,
 
   return (
     <Box sx={{ maxWidth: 600, margin: 'auto', padding: 2 }}>
-      <FormControlLabel
-        control={<Switch checked={isManualInput} onChange={handleToggleChange} />}
-        label="Manual Input"
-      />
+      {!hideToggle && (
+        <FormControlLabel
+          control={<Switch checked={isManualInput} onChange={handleToggleChange} />}
+          label="Manual Input"
+        />
+      )}
 
       {isManualInput ? (
         <form onSubmit={handleSubmit}>
@@ -108,7 +124,7 @@ const MedicineForm: React.FC<MedicationFormProps> = ({ onSubmit, onToggleChange,
             required
           />
           <Button variant="contained" color="primary" type="submit" sx={{ mt: 2 }}>
-            Submit
+            {submitButtonText}
           </Button>
         </form>
       ) : (
@@ -134,4 +150,4 @@ const MedicineForm: React.FC<MedicationFormProps> = ({ onSubmit, onToggleChange,
   );
 };
 
-export default MedicineForm;
+export default MedicationForm;

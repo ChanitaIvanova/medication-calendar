@@ -8,6 +8,7 @@ import App from './App';
 import Medication from './components/medication/Medication';
 import MedicationList from './components/medication/MedicationList';
 import MedicationView from './components/medication/MedicationView';
+import EditMedication from './components/medication/EditMedication';
 
 const routes = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const routes = createBrowserRouter([
             {
                 path: "medications/:id",
                 element: <MedicationView />,
+            },
+            {
+                path: "edit-medication/:id",
+                element: <EditMedication />,
             }
         ],
     }

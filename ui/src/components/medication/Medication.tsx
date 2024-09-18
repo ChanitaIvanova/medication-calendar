@@ -53,6 +53,7 @@ const Medicine: React.FC = () => {
         onSubmit={handleSubmit}
         onToggleChange={setIsManualInput}
         isManualInput={isManualInput}
+        submitButtonText="Create Medication"
       />
     </Box>
   );

@@ -190,7 +190,7 @@ function MedicationList() {
         <Button
           startIcon={<EditIcon />}
           disabled={!selectedMedication}
-          onClick={() => console.log('Edit', selectedMedication)}
+          onClick={() => navigate(`/edit-medication/${selectedMedication}`)}
         >
           Edit
         </Button>

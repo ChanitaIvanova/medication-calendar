@@ -56,3 +56,9 @@ def delete_medication(medication_id: str, medications_controller: MedicationsCon
 @inject
 def get_medication(medication_id: str, medications_controller: MedicationsController):
     return medications_controller.get_medication(medication_id)
+
+@medications.route('/medication/<medication_id>', methods=['PUT'])
+@login_required
+@inject
+def update_medication(medication_id: str, medications_controller: MedicationsController):
+    return medications_controller.update_medication(medication_id)
