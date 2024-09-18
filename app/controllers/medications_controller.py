@@ -37,7 +37,7 @@ class MedicationsController:
     def get_medication(self, medication_id):
         medication = Medications.find(medication_id)
         if medication:
-            return medication.to_json()
+            return jsonify(json.loads(medication.to_json()))
         return make_response(jsonify({"error": "Medication not found"}), 404)
 
     def delete_medication(self, medication_id):

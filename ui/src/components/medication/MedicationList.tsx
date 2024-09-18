@@ -6,6 +6,7 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 interface Medication {
   id: string;
@@ -100,6 +101,7 @@ function MedicationList() {
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchMedications();
@@ -181,7 +183,7 @@ function MedicationList() {
         <Button
           startIcon={<VisibilityIcon />}
           disabled={!selectedMedication}
-          onClick={() => console.log('View', selectedMedication)}
+          onClick={() => navigate(`/medications/${selectedMedication}`)}
         >
           View
         </Button>

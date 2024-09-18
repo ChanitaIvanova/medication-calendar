@@ -6,6 +6,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import MedicationView from '../medication/MedicationView';
 
 function Navigation(): JSX.Element {
     const { user, setUser, clearUser } = useUser();
