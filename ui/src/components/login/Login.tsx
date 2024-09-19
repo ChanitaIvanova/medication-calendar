@@ -3,6 +3,7 @@ import LoginForm from './LoginForm';
 import { useNavigate } from "react-router-dom";
 import { useUser } from '../../context/UserContext';
 import { userService } from '../../services/userService';
+import { UserProvider } from '../../context/UserContext';
 
 const Login: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -17,7 +18,7 @@ const Login: React.FC = () => {
             setUser(user);
             setLoading(false);
             navigate('/');
-        } catch (err) {
+        } catch (err: any) {
             console.log(err);
             setError(err.response?.data?.error || 'An error occurred');
             setLoading(false);

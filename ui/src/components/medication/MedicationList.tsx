@@ -32,8 +32,8 @@ const getCommonFilterOperators = () => [
 ];
 
 const commonColumnProperties = {
-  flex: 2,
-  minWidth: 250,
+  flex: 1,
+  minWidth: 450,
   filterable: true,
   renderCell: (params) => (
     <div style={{ 
@@ -76,14 +76,12 @@ const columns: GridColDef[] = [
     headerName: 'Side Effects', 
     ...commonColumnProperties,
     hideable: true,
-    hide: true,
   },
   { 
     field: 'contents', 
     headerName: 'Contents', 
     ...commonColumnProperties,
     hideable: true,
-    hide: true,
   },
 ];
 
@@ -196,10 +194,10 @@ function MedicationList() {
           pagination
           paginationMode="server"
           rowCount={totalRows}
-          pageSize={pageSize}
-          rowsPerPageOptions={isMobile ? [5, 10] : [5, 10, 20]}
-          onPageChange={(newPage) => setPage(newPage)}
-          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+          paginationModel={{pageSize, page: 0}}
+          pageSizeOptions={isMobile ? [5, 10] : [5, 10, 20]}
+          onPageChange={(newPage: number) => setPage(newPage)}
+          onPageSizeChange={(newPageSize: number) => setPageSize(newPageSize)}
           sortingMode="server"
           onSortModelChange={(newSortModel) => setSortModel(newSortModel)}
           filterMode="server"
@@ -217,6 +215,7 @@ function MedicationList() {
             columns: {
               columnVisibilityModel: {
                 contents: false,
+                side_effects: false
               },
             },
           }}
