@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, Typography, CircularProgress, Box } from '@mui/material';
+import { medicationService } from '../../services/medicationService';
 
 interface Medication {
   id: string;
@@ -19,16 +20,9 @@ const MedicationView: React.FC = () => {
   useEffect(() => {
     const fetchMedication = async () => {
       try {
-        const response = await fetch(`/api/medications/medication/${id}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setMedication(data);
-        } else {
-          console.error('Failed to fetch medication');
-        }
+        setLoading(true);
+        const data = await medicationService.fetchMedication(id);
+        setMedication(data);
       } catch (error) {
         console.error('Error fetching medication:', error);
       } finally {

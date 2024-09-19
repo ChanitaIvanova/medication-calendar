@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import LoginForm from './LoginForm';
 import { useNavigate } from "react-router-dom";
-import User from '../../types/User'
-import { UserProvider, useUser } from '../../context/UserContext';
-
-interface LoginData {
-    username: string;
-    password: string;
-}
+import { useUser } from '../../context/UserContext';
+import { userService } from '../../services/userService';
 
 const Login: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -17,19 +11,17 @@ const Login: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const handleLogin = (username: string, password: string) => {
-        axios
-            .post<User>('http://127.0.0.1:9000/api/auth/login', { username: username, password: password })
-            .then((response) => {
-                setUser(response.data);
-                setLoading(false);
-                navigate('/');
-            })
-            .catch((err) => {
-                console.log(err)
-                setError(err.response.data.error);
-                setLoading(false);
-            });
+    const handleLogin = async (username: string, password: string) => {
+        try {
+            const user = await userService.login(username, password);
+            setUser(user);
+            setLoading(false);
+            navigate('/');
+        } catch (err) {
+            console.log(err);
+            setError(err.response?.data?.error || 'An error occurred');
+            setLoading(false);
+        }
     };
 
     if (loading) {
@@ -41,4 +33,4 @@ const Login: React.FC = () => {
     );
 };
 
-export default Login
+export default Login;

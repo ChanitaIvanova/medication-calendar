@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
+import { medicationService } from '../../services/medicationService';
 
 interface Medication {
   id: string;
@@ -120,25 +121,17 @@ function MedicationList() {
         return acc;
       }, {} as Record<string, string>);
 
-      const queryParams = new URLSearchParams({
-        page: (page + 1).toString(),
-        per_page: pageSize.toString(),
+      const params = {
+        page: page + 1,
+        per_page: pageSize,
         sort_field: sortField,
-        sort_direction: sortDirection || '', // Ensure it's always a string
+        sort_direction: sortDirection || '',
         ...filterParams
-      });
+      };
 
-      const response = await fetch(`/api/medications?${queryParams.toString()}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setMedications(data.medications);
-        setTotalRows(data.total_count);
-      } else {
-        console.error('Failed to fetch medications');
-      }
+      const data = await medicationService.fetchMedications(params);
+      setMedications(data.medications);
+      setTotalRows(data.total_count);
     } catch (error) {
       console.error('Error fetching medications:', error);
     } finally {
@@ -149,18 +142,11 @@ function MedicationList() {
   const handleDelete = async () => {
     if (selectedMedication) {
       try {
-        const response = await fetch(`/api/medications/medication/${selectedMedication}`, {
-          method: 'DELETE',
-          credentials: 'include',
-        });
-        if (response.ok) {
-          fetchMedications();
-          setDeleteDialogOpen(false);
-          setSelectedMedication(null);
-          setRowSelectionModel([]);
-        } else {
-          console.error('Failed to delete medication');
-        }
+        await medicationService.deleteMedication(selectedMedication);
+        fetchMedications();
+        setDeleteDialogOpen(false);
+        setSelectedMedication(null);
+        setRowSelectionModel([]);
       } catch (error) {
         console.error('Error deleting medication:', error);
       }

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Snackbar } from '@mui/material';
 import MedicationForm from './MedicationForm';
 import { MedicationFormData } from './Medication';
-import axios from 'axios';
+import { medicationService } from '../../services/medicationService';
 
 const EditMedication: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,13 +21,13 @@ const EditMedication: React.FC = () => {
 
   const fetchMedication = async () => {
     try {
-      const response = await axios.get(`/api/medications/medication/${id}`);
+      const response = await medicationService.fetchMedication(id);
       setMedication({
-        name: response.data.name,
-        contents: response.data.contents,
-        objective: response.data.objective,
-        sideEffects: response.data.side_effects,
-        dosageSchedule: response.data.dosage_schedule,
+        name: response.name,
+        contents: response.contents,
+        objective: response.objective,
+        sideEffects: response.side_effects,
+        dosageSchedule: response.dosage_schedule,
       });
     } catch (error) {
       setError('Failed to fetch medication data');
@@ -46,7 +46,7 @@ const EditMedication: React.FC = () => {
 
     setLoading(true);
     try {
-      await axios.put(`/api/medications/medication/${id}`, editedData);
+      await medicationService.updateMedication(id, editedData);
       setSnackbarOpen(true);
       setTimeout(() => {
         navigate(`/medications/${id}`);
