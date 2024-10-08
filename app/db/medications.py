@@ -40,6 +40,14 @@ class Medications:
         medications = list(collection.find(query).sort(sort_params).skip(skip).limit(per_page))
 
         return total_count, medications
+    
+    @staticmethod
+    def find_by_user_id(user_id):
+        collection = Medications.__get_collection()
+        query = {'user_id': user_id}
+        medications = list(collection.find(query))
+
+        return medications
 
     @staticmethod
     def count_by_user_id(user_id):

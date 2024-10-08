@@ -8,6 +8,7 @@ import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import MedicationView from '../medication/MedicationView';
+import NewTimesheet from '../timesheet/NewTimesheet'; // Add this import
 
 function Navigation(): JSX.Element {
     const { user, setUser, clearUser } = useUser();
@@ -104,6 +105,14 @@ function Navigation(): JSX.Element {
                                             onClick={() => navigate('/new-medication')}
                                         >
                                             New Medication
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            variant="text"
+                                            size="small"
+                                            onClick={() => navigate('/new-timesheet')} // Add this button
+                                        >
+                                            New Timesheet
                                         </Button>
                                     </>
                                 )}

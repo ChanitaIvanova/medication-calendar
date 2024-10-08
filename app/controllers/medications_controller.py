@@ -2,7 +2,7 @@ from model.medication_model import MedicationModel
 from db.medications import Medications
 from flask import jsonify, request, make_response
 from typing import Dict
-from flask_login import current_user
+from flask_login import current_user, login_required
 from services.medication_service import MedicationService
 from injector import inject
 import json
@@ -87,3 +87,15 @@ class MedicationsController:
         if result.modified_count:
             return jsonify({"message": "Medication updated successfully"}), 200
         return make_response(jsonify({"error": "Failed to update medication"}), 500)
+
+    @login_required
+    def get_medications(self):
+        medications = Medications.findAll()
+        return jsonify([med.asdict() for med in medications])
+
+    @login_required
+    def get_user_medications(self):
+        user_id = str(current_user.id)
+        medications = Medications.find_by_user_id(user_id)
+        medications_dict = [MedicationModel(**med) for med in medications]
+        return jsonify([{"id": str(med._id), "name": med.name} for med in medications_dict])

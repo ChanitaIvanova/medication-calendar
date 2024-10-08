@@ -62,3 +62,9 @@ def get_medication(medication_id: str, medications_controller: MedicationsContro
 @inject
 def update_medication(medication_id: str, medications_controller: MedicationsController):
     return medications_controller.update_medication(medication_id)
+
+@medications.route('/medications/user', methods=['GET'])
+@login_required
+@inject
+def get_user_medications(medications_controller: MedicationsController):
+    return medications_controller.get_user_medications()

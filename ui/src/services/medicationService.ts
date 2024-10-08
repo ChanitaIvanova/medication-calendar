@@ -34,4 +34,9 @@ export const medicationService = {
     const response = await axios.delete(`${API_BASE_URL}/medication/${id}`);
     return response.data;
   },
+
+  async fetchUserMedications() {
+    const response = await axios.get(`${API_BASE_URL}/medications/user`);
+    return response.data;
+  },
 };
