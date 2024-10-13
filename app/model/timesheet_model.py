@@ -40,7 +40,7 @@ class TimeSheetModel(BaseModel):
         self._id = _id
         self.id = _id
         self.user_id = user_id
-        self.medications = medications
+        self.medications = [MedicationEntry(**med) for med in medications]
         self.status = status
         self.start_date = start_date
         self.end_date = end_date
@@ -54,7 +54,7 @@ class TimeSheetModel(BaseModel):
     def asdict(self):
         dictionary = asdict(self)
         dictionary.update({'id': str(self._id)})
-        dictionary['status'] = self.status.value
+        dictionary['status'] = self.status
         dictionary['medications'] = [asdict(med) for med in self.medications]
         return dictionary
 

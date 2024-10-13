@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import MedicationView from '../medication/MedicationView';
 import NewTimesheet from '../timesheet/NewTimesheet'; // Add this import
+import TimesheetList from '../timesheet/TimesheetList'; // Add this import
 
 function Navigation(): JSX.Element {
     const { user, setUser, clearUser } = useUser();
@@ -113,6 +114,14 @@ function Navigation(): JSX.Element {
                                             onClick={() => navigate('/new-timesheet')} // Add this button
                                         >
                                             New Timesheet
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            variant="text"
+                                            size="small"
+                                            onClick={() => navigate('/timesheets')} // Add this button
+                                        >
+                                            Timesheets
                                         </Button>
                                     </>
                                 )}

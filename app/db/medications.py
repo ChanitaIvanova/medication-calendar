@@ -22,33 +22,31 @@ class Medications:
         return medication
 
     @staticmethod
-    def find_by_user_id(user_id, page, per_page, sort_field=None, sort_direction=None, filters=None):
+    def find_by_user_id(user_id, page=None, per_page=None, sort_field=None, sort_direction=None, filters=None):
         collection = Medications.__get_collection()
-        skip = (page - 1) * per_page
+        if page:
+            skip = (page - 1) * per_page
 
-        query = {'user_id': user_id}
-        if filters:
-            for field, value in filters.items():
-                if value:
-                    query[field] = {'$regex': value, '$options': 'i'}
+            query = {'user_id': user_id}
+            if filters:
+                for field, value in filters.items():
+                    if value:
+                        query[field] = {'$regex': value, '$options': 'i'}
 
-        sort_params = [('_id', DESCENDING)]
-        if sort_field and sort_direction:
-            sort_params.insert(0, (sort_field, ASCENDING if sort_direction == 'asc' else DESCENDING))
+            sort_params = [('_id', DESCENDING)]
+            if sort_field and sort_direction:
+                sort_params.insert(0, (sort_field, ASCENDING if sort_direction == 'asc' else DESCENDING))
 
-        total_count = collection.count_documents(query)
-        medications = list(collection.find(query).sort(sort_params).skip(skip).limit(per_page))
+            total_count = collection.count_documents(query)
+            medications = list(collection.find(query).sort(sort_params).skip(skip).limit(per_page))
 
-        return total_count, medications
-    
-    @staticmethod
-    def find_by_user_id(user_id):
-        collection = Medications.__get_collection()
-        query = {'user_id': user_id}
-        medications = list(collection.find(query))
+            return total_count, medications
+        else:
+            query = {'user_id': user_id}
+            medications = list(collection.find(query))
 
-        return medications
-
+            return medications
+        
     @staticmethod
     def count_by_user_id(user_id):
         collection = Medications.__get_collection()

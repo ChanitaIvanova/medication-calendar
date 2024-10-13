@@ -9,7 +9,9 @@ import Medication from './components/medication/Medication';
 import MedicationList from './components/medication/MedicationList';
 import MedicationView from './components/medication/MedicationView';
 import EditMedication from './components/medication/EditMedication';
-import NewTimesheet from './components/timesheet/NewTimesheet'; // Add this import
+import NewTimesheet from './components/timesheet/NewTimesheet';
+import TimesheetList from './components/timesheet/TimesheetList'; // Add this import
+import TimesheetCalendar from './components/timesheet/TimesheetCalendar'; // Add this import
 
 const routes = createBrowserRouter([
     {
@@ -45,8 +47,16 @@ const routes = createBrowserRouter([
                 element: <EditMedication />,
             },
             {
-                path: "new-timesheet", // Add this route
+                path: "new-timesheet",
                 element: <NewTimesheet />,
+            },
+            {
+                path: "timesheets",
+                element: <TimesheetList />,
+            },
+            {
+                path: "timesheet/:id",
+                element: <TimesheetCalendar />,
             }
         ],
     }

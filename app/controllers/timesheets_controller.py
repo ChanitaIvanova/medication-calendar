@@ -70,3 +70,12 @@ class TimesheetsController:
         
         saved_timesheet = Timesheets.add(new_timesheet)
         return jsonify(saved_timesheet.asdict()), 201
+
+    def get_all_timesheets(self):
+        user_id = str(current_user.id)  # Get the current user's ID
+        timesheets = Timesheets.find_by_user_id(user_id)  # Fetch timesheets for the current user
+        return jsonify([ts.asdict() for ts in timesheets]), 200
+
+    def get_timesheet_by_id(self, id):
+        timesheet = Timesheets.find(id)
+        return jsonify(timesheet.asdict()) if timesheet else make_response(jsonify({"error": "Timesheet not found"}), 404)
