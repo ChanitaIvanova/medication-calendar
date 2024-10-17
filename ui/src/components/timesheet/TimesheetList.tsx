@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { fetchTimesheets } from '../../services/timesheetService'; // Import the service function
 import { DataGrid } from '@mui/x-data-grid'; // Import DataGrid from Material-UI
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
@@ -11,11 +11,11 @@ const TimesheetList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchTimesheets = async () => {
-            const response = await axios.get('/api/timesheets/timesheets', { withCredentials: true });
-            setTimesheets(response.data);
+        const fetchTimesheetData = async () => {
+            const data = await fetchTimesheets(); // Use the service function
+            setTimesheets(data);
         };
-        fetchTimesheets();
+        fetchTimesheetData();
     }, []);
 
     const columns = [ // Define columns for DataGrid

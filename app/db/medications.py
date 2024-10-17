@@ -75,3 +75,9 @@ class Medications:
             {"_id": ObjectId(medication.get_id())},
             {"$set": medication.asdict()}
         )
+
+    @staticmethod
+    def find_by_ids(ids):
+        collection = Medications.__get_collection()
+        medications = list(collection.find({'_id': {'$in': [ObjectId(id) for id in ids]}}))
+        return [MedicationModel(**med) for med in medications]

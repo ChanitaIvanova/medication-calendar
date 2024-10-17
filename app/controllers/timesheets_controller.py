@@ -74,8 +74,29 @@ class TimesheetsController:
     def get_all_timesheets(self):
         user_id = str(current_user.id)  # Get the current user's ID
         timesheets = Timesheets.find_by_user_id(user_id)  # Fetch timesheets for the current user
+        
+        # Fetch medication names and link them to each medication entry
+        for ts in timesheets:
+            medication_ids = [med.id for med in ts.medications]
+            medications = Medications.find_by_ids(medication_ids)
+            medication_dict = {med.id: med.name for med in medications}
+            
+            for med_entry in ts.medications:
+                med_entry.name = medication_dict.get(med_entry.id)  # Link name to each medication entry
+        
         return jsonify([ts.asdict() for ts in timesheets]), 200
 
     def get_timesheet_by_id(self, id):
         timesheet = Timesheets.find(id)
-        return jsonify(timesheet.asdict()) if timesheet else make_response(jsonify({"error": "Timesheet not found"}), 404)
+        if timesheet:
+            medication_ids = [med.id for med in timesheet.medications]
+            medications = Medications.find_by_ids(medication_ids)
+            medication_dict = {str(med.id): med.name for med in medications}
+            print(medication_dict)
+            
+            for med_entry in timesheet.medications:
+                print(med_entry.id)
+                med_entry.name = medication_dict.get(med_entry.id)  # Link name to each medication entry
+            
+            return jsonify(timesheet.asdict()), 200
+        return make_response(jsonify({"error": "Timesheet not found"}), 404)

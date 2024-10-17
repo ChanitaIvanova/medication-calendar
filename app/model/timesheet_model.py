@@ -17,6 +17,7 @@ class MedicationEntry:
     dosage: str
     advise: str
     dates: List[str]
+    name: str = ""  # Add this line to include the name of the medication
 
 @dataclass
 class TimeSheetModel(BaseModel):
