@@ -41,7 +41,11 @@ class TimeSheetModel(BaseModel):
         self._id = _id
         self.id = _id
         self.user_id = user_id
-        self.medications = [MedicationEntry(**med) for med in medications]
+        self.medications = []
+        for med in medications:
+            if isinstance(med, MedicationEntry): 
+                self.medications.append(med) 
+            else: self.medications.append(MedicationEntry(**med)) 
         self.status = status
         self.start_date = start_date
         self.end_date = end_date

@@ -56,6 +56,15 @@ sleep 2
 
 echo "Flask app started on port 5000 with PID: $FLASK_PID"
 
+cd docs
+python serve_docs.py &
+
+DOCS_PID=$!
+
+sleep 2
+
+echo "DOCS app started on port 7000 with PID: $DOCS_PID"
+
 # Function to stop processes
 stop_processes() {
     echo "Stopping processes..."
@@ -64,6 +73,11 @@ stop_processes() {
     if [ -n "$FLASK_PID" ]; then
         echo "Stopping Flask app (PID: $FLASK_PID)"
         kill $FLASK_PID
+    fi
+
+    if [ -n "$DOCS_PID" ]; then
+        echo "Stopping Docs app (PID: $DOCS_PID)"
+        kill $DOCS_PID
     fi
     
     # Stop React app
@@ -83,4 +97,4 @@ stop_processes() {
 trap 'stop_processes' EXIT INT TERM
 
 # Keep the script running
-wait $FLASK_PID $VITE_PID
+wait $FLASK_PID $VITE_PID $DOCS_PID

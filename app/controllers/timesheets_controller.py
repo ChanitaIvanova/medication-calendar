@@ -8,16 +8,34 @@ from db.medications import Medications
 from model.timesheet_model import TimeSheetModel, MedicationEntry, TimeSheetStatus
 from injector import inject
 from datetime import datetime
-import json
 
 class TimesheetsController:
+    """
+    Controller class for managing timesheet-related operations.
+    """
     
     @inject
     def __init__(self, medication_service: MedicationService, timesheet_service: TimesheetService):
+        """
+        Initialize the TimesheetsController with MedicationService and TimesheetService instances.
+
+        :param medication_service: The service used to manage medication-related operations.
+        :type medication_service: MedicationService
+        :param timesheet_service: The service used to manage timesheet-related operations.
+        :type timesheet_service: TimesheetService
+        """
         self.medication_service = medication_service
         self.timesheet_service = timesheet_service
 
     def create_timesheet(self):
+        """
+        Create a new timesheet for the current user based on provided medication IDs and date range.
+
+        :return: A response indicating the success or failure of the timesheet creation.
+        :rtype: Response
+        :statuscode 201: Timesheet created successfully
+        :statuscode 400: Bad request (e.g., missing required fields or invalid date format)
+        """
         data: Dict = request.get_json()
         
         # Validate required fields
@@ -48,15 +66,12 @@ class TimesheetsController:
         
         # Generate timesheet using OpenAI
         data: Dict = self.timesheet_service.build_timesheet(medications_data, start_date_str, end_date_str)
-        # print(json.dumps(data, indent=4))
         medications_timesheet = data["medications"]
         
         medication_entries = []
         # Parse OpenAI response and create MedicationEntry objects
-        # This is a simplified version; you may need to adjust based on the actual OpenAI response format
         for med in medications_timesheet:
             if med:
-                #dates.append(datetime.strptime(date, '%Y-%m-%dT%H:%M:%S'))
                 medication_entries.append(MedicationEntry(id=med["id"], dosage=med["dosage"], dates= med["dates"], advise = med["advise"]))
         
         # Create and save the new timesheet
@@ -65,13 +80,20 @@ class TimesheetsController:
             medications=medication_entries,
             start_date=start_date_str,
             end_date=end_date_str,
-            status=TimeSheetStatus.ACTIVE
+            status=TimeSheetStatus.ACTIVE.value
         )
         
         saved_timesheet = Timesheets.add(new_timesheet)
         return jsonify(saved_timesheet.asdict()), 201
 
     def get_all_timesheets(self):
+        """
+        Get all timesheets for the current user.
+
+        :return: A JSON response containing the list of all timesheets for the user.
+        :rtype: Response
+        :statuscode 200: Successfully retrieved timesheets
+        """
         user_id = str(current_user.id)  # Get the current user's ID
         timesheets = Timesheets.find_by_user_id(user_id)  # Fetch timesheets for the current user
         
@@ -87,15 +109,23 @@ class TimesheetsController:
         return jsonify([ts.asdict() for ts in timesheets]), 200
 
     def get_timesheet_by_id(self, id):
+        """
+        Get a timesheet by its ID.
+
+        :param id: The ID of the timesheet to retrieve.
+        :type id: str
+        :return: A JSON response containing the timesheet details.
+        :rtype: Response
+        :statuscode 200: Successfully retrieved timesheet
+        :statuscode 404: Timesheet not found
+        """
         timesheet = Timesheets.find(id)
         if timesheet:
             medication_ids = [med.id for med in timesheet.medications]
             medications = Medications.find_by_ids(medication_ids)
             medication_dict = {str(med.id): med.name for med in medications}
-            print(medication_dict)
             
             for med_entry in timesheet.medications:
-                print(med_entry.id)
                 med_entry.name = medication_dict.get(med_entry.id)  # Link name to each medication entry
             
             return jsonify(timesheet.asdict()), 200
