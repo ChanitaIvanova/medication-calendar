@@ -50,6 +50,7 @@ class TimesheetService:
             "The name - should contain the same name as provided in the information and should match the medication."
             "The dates field should be a list of dates with times when the medication should be taken in the provided period. The format should always be '%Y-%m-%dT%H:%M:%S'."
             "The dosage should be free text with information on how and how many dosages should be taken from this medication."
+            "The advise should be free text with information for the medication in case there are some specifics when taking it."
             "The returned value should be a valid json format with no new lines or any text before or after the json output.\n"
         )
 
@@ -66,10 +67,6 @@ class TimesheetService:
             response = self.openai_service.run(prompt, data_json)
             
             timesheet = json.loads(response)
-            required_fields = ["id", "name", "dates", "dosage", "advise"]
-            if not all(field in timesheet for field in required_fields):
-                raise ValueError("The response from OpenAIService is missing one or more required fields: " + str(required_fields))
-
             return timesheet
         except json.JSONDecodeError as e:
             logging.error(f"JSON decoding error: {str(e)}. Response: {response}")

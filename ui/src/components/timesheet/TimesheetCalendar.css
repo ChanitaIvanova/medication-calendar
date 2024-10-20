@@ -5,14 +5,27 @@
 
 .calendar-cell {
     border: 1px solid #ccc;
-    padding: 0.5rem;
+    border-radius: 1rem;
     text-align: center;
-    min-height: 80px;
     position: relative;
+    height: 110px;
+    overflow: auto;
+    padding: 0.5rem;
 }
 
 .calendar-cell.empty {
     background-color: #f0f0f0;
+}
+
+.calendar-cell::-webkit-scrollbar-thumb {
+    background-color: rgb(231 226 226);
+    border: 3px solid transparent;
+    border-radius: 8px;
+    background-clip: padding-box;  
+}
+  
+.calendar-cell::-webkit-scrollbar {
+    width: 12px;
 }
 
 .day-number {
@@ -21,9 +34,9 @@
 }
 
 .medication-entry {
-    background-color: #e0f7fa;
+    background-color: #afd2e9;
     padding: 0.2rem;
     margin-top: 0.2rem;
     border-radius: 4px;
-    font-size: 0.85rem;
+    font-size: 0.6rem;
 }

@@ -3,8 +3,11 @@ import { useParams } from 'react-router-dom';
 import { fetchTimesheet } from '../../services/timesheetService'; // Import the service function
 import { TimeSheet, Medication } from '../../models/timesheet_model'; // Import the model
 import Tooltip from '@mui/material/Tooltip';
-import Grid from '@mui/material/Grid';
 import './TimesheetCalendar.css';
+import { Button, Box, Typography } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import dayjs from 'dayjs'
 
 const TimesheetCalendar: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -71,18 +74,20 @@ const TimesheetCalendar: React.FC = () => {
 
             calendar.push(
                 <div key={day} className="calendar-cell">
-                    <div className="day-number">{day}</div>
-                    {medicationsForDay.map(med => (
-                        <Tooltip key={med.id + "_" + med.dates[0].time} title={`Dosage: ${med.dosage}, Advise: ${med.advise}`} arrow>
-                            <div className="medication-entry">{med.dates[0].time} {med.name}</div>
-                        </Tooltip>
-                    ))}
+                    <div key={day} className="calendar-content">
+                        <div className="day-number">{day}</div>
+                        {medicationsForDay.map(med => (
+                            <Tooltip key={med.id + "_" + med.dates[0].time} title={`Dosage: ${med.dosage}, Advise: ${med.advise}`} arrow>
+                                <div className="medication-entry">{med.dates[0].time} {med.name}</div>
+                            </Tooltip>
+                        ))}
+                    </div>
                 </div>
             );
         }
 
         // Fill the rest of the calendar grid with empty cells
-        const totalCells = 42; // 6 rows and 7 columns to accommodate all months
+        const totalCells = 35; // 5 rows and 7 columns to accommodate all months
         const remainingCells = totalCells - (firstDay + monthDays);
         for (let i = 0; i < remainingCells; i++) {
             calendar.push(<div key={`empty-end-${i}`} className="calendar-cell empty"></div>);
@@ -93,11 +98,29 @@ const TimesheetCalendar: React.FC = () => {
 
     return (
         <div>
-            <h1>Timesheet Calendar</h1>
-            <button onClick={() => handleMonthChange('prev')}>Previous</button>
-            <button onClick={() => handleMonthChange('next')}>Next</button>
-            <h2>{currentMonth.toLocaleString('default', { month: 'long' })} {currentMonth.getFullYear()}</h2>
-            <div className="calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gridTemplateRows: 'repeat(6, 1fr)' }}>
+            <Typography variant="h4" gutterBottom>
+                Timesheet Calendar
+            </Typography>
+            <Typography variant="h5" gutterBottom>
+            {currentMonth.toLocaleString('default', { month: 'long' })} {currentMonth.getFullYear()}
+            </Typography>
+            <Box sx={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', padding: '0 1rem' }}>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIcon  />}
+                    onClick={() => handleMonthChange('prev')}
+                    >
+                    Previous
+                </Button>
+                <Button
+                    variant="outlined"
+                    startIcon={<ArrowForwardIcon />}
+                    onClick={() => handleMonthChange('next')}
+                    >
+                    Next
+                </Button>
+            </Box>
+            <div className="calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gridTemplateRows: 'repeat(5, 1fr)' }}>
                 {renderCalendar()}
             </div>
         </div>

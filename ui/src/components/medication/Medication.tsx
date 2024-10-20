@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import MedicationForm from './MedicationForm';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 export interface MedicationFormData {
   name: string;
@@ -49,6 +49,9 @@ const Medicine: React.FC = () => {
 
   return (
     <Box>
+      <Typography variant="h4" gutterBottom>
+        New Medication
+      </Typography>
       <MedicationForm
         onSubmit={handleSubmit}
         onToggleChange={setIsManualInput}

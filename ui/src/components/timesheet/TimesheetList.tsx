@@ -19,9 +19,9 @@ const TimesheetList: React.FC = () => {
     }, []);
 
     const columns = [ // Define columns for DataGrid
-        { field: 'status', headerName: 'Status', width: 150 },
-        { field: 'start_date', headerName: 'Start Date', width: 150 },
-        { field: 'end_date', headerName: 'End Date', width: 150 },
+        { field: 'status', headerName: 'Status', minWidth: 150, },
+        { field: 'start_date', headerName: 'Start Date', minWidth: 150, },
+        { field: 'end_date', headerName: 'End Date', minWidth: 150, },
     ];
 
     return (
@@ -29,8 +29,10 @@ const TimesheetList: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Your Timesheets
       </Typography>
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 2, textAlign: "left" }}>
         <Button
+          sx={{ mr: 1}}
+          variant="outlined"
           startIcon={<VisibilityIcon />}
           disabled={!selectedTimesheetId}
           onClick={() => navigate(`/timesheet/${selectedTimesheetId}`)}
@@ -39,14 +41,15 @@ const TimesheetList: React.FC = () => {
         </Button>
       </Box>
       <Paper sx={{ flexGrow: 1, width: '100%', height: "100%", overflow: 'hidden' }}>
-      <DataGrid // Replace table with DataGrid
-                rows={timesheets}
-                columns={columns}
-                paginationModel={{pageSize: 5, page: 0}}
-                pageSizeOptions={[5]}
-                onRowSelectionModelChange={(newSelection) => setSelectedTimesheetId(newSelection[0] as string)} // Update selectedTimesheetId
-                checkboxSelection={false}
-            />
+      <DataGrid
+          autoHeight
+          rows={timesheets}
+          columns={columns}
+          paginationModel={{pageSize: 5, page: 0}}
+          pageSizeOptions={[5]}
+          onRowSelectionModelChange={(newSelection) => setSelectedTimesheetId(newSelection[0] as string)} // Update selectedTimesheetId
+          checkboxSelection={false}
+        />
       </Paper>
     </Box>
     );

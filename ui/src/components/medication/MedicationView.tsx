@@ -51,18 +51,34 @@ const MedicationView: React.FC = () => {
         <Typography variant="h5" component="div" gutterBottom>
           {medication.name}
         </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Objective:</strong> {medication.objective}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Dosage Schedule:</strong> {medication.dosage_schedule}
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Side Effects:</strong> {medication.side_effects}
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Contents:</strong> {medication.contents}
-        </Typography>
+        <Card sx={{marginTop: '1rem'}}>
+          <CardContent>
+            <Typography variant="body1" paragraph>
+              <strong>Objective:</strong> {medication.objective}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{marginTop: '1rem'}}>
+          <CardContent>
+            <Typography variant="body1">
+              <strong>Dosage Schedule:</strong> {medication.dosage_schedule}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{marginTop: '1rem'}}>
+          <CardContent>
+            <Typography variant="body1" paragraph>
+              <strong>Side Effects:</strong> {medication.side_effects}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{marginTop: '1rem'}}>
+          <CardContent>
+            <Typography variant="body1" paragraph>
+              <strong>Contents:</strong> {medication.contents}
+            </Typography>
+          </CardContent>
+        </Card>
       </CardContent>
     </Card>
   );

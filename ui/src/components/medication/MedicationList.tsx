@@ -163,8 +163,10 @@ function MedicationList() {
       <Typography variant="h4" gutterBottom>
         Your Medications
       </Typography>
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 2, textAlign: "left" }}>
         <Button
+          sx={{ mr: 1}}
+          variant="outlined"
           startIcon={<VisibilityIcon />}
           disabled={!selectedMedication}
           onClick={() => navigate(`/medications/${selectedMedication}`)}
@@ -172,6 +174,8 @@ function MedicationList() {
           View
         </Button>
         <Button
+          sx={{ mr: 1}}
+          variant="outlined"
           startIcon={<EditIcon />}
           disabled={!selectedMedication}
           onClick={() => navigate(`/edit-medication/${selectedMedication}`)}
@@ -179,6 +183,8 @@ function MedicationList() {
           Edit
         </Button>
         <Button
+          sx={{ mr: 1}}
+          variant="outlined"
           startIcon={<DeleteIcon />}
           disabled={!selectedMedication}
           onClick={() => setDeleteDialogOpen(true)}

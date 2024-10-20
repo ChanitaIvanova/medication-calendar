@@ -95,17 +95,9 @@ function Navigation(): JSX.Element {
                                             color="primary"
                                             variant="text"
                                             size="small"
-                                            onClick={() => navigate('/medications')}
+                                            onClick={() => navigate('/timesheets')} // Add this button
                                         >
-                                            Medications
-                                        </Button>
-                                        <Button
-                                            color="primary"
-                                            variant="text"
-                                            size="small"
-                                            onClick={() => navigate('/new-medication')}
-                                        >
-                                            New Medication
+                                            Timesheets
                                         </Button>
                                         <Button
                                             color="primary"
@@ -119,9 +111,17 @@ function Navigation(): JSX.Element {
                                             color="primary"
                                             variant="text"
                                             size="small"
-                                            onClick={() => navigate('/timesheets')} // Add this button
+                                            onClick={() => navigate('/medications')}
                                         >
-                                            Timesheets
+                                            Medications
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            variant="text"
+                                            size="small"
+                                            onClick={() => navigate('/new-medication')}
+                                        >
+                                            New Medication
                                         </Button>
                                     </>
                                 )}
