@@ -39,4 +39,13 @@
     margin-top: 0.2rem;
     border-radius: 4px;
     font-size: 0.6rem;
+
+    ul {
+        margin: 0;
+        padding: 0px 0 0 1rem;
+
+        li {
+            text-align: left;
+        }
+    }
 }

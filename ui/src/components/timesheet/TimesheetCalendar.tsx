@@ -7,7 +7,7 @@ import './TimesheetCalendar.css';
 import { Button, Box, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import dayjs from 'dayjs'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const TimesheetCalendar: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -30,20 +30,11 @@ const TimesheetCalendar: React.FC = () => {
         });
     };
 
-    const renderCalendar = () => {
-        if (!timesheet) return null;
-
-        const monthDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-        const firstDay = (new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() + 6) % 7; // Adjust to start on Monday
-        const calendar = [];
-
-        // Create a map to hold medications for each day
+    const buildMedicationsMapPerKey = (key: string, medications: any): Record<string, Medication[]> => {
         const medicationsMap: Record<string, Medication[]> = {};
-
-        // Populate the medicationsMap
-        timesheet.medications.forEach(med => {
+        medications.forEach(med => {
             med.dates.forEach(medDate => {
-                const dateKey = medDate.date; // Use the date as the key
+                const dateKey = medDate[key]; // Use the date as the key
                 if (!medicationsMap[dateKey]) {
                     medicationsMap[dateKey] = [];
                 }
@@ -52,6 +43,19 @@ const TimesheetCalendar: React.FC = () => {
                 medicationsMap[dateKey].push(newMed);
             });
         });
+
+        return medicationsMap;
+    }
+
+    const renderCalendar = () => {
+        if (!timesheet) return null;
+
+        const monthDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+        const firstDay = (new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() + 6) % 7; // Adjust to start on Monday
+        const calendar = [];
+
+        // Create a map to hold medications for each day
+        const medicationsMap = buildMedicationsMapPerKey("date",  timesheet.medications);
 
         // Fill the calendar with empty cells for days before the first day of the month
         for (let i = 0; i < firstDay; i++) {
@@ -72,14 +76,33 @@ const TimesheetCalendar: React.FC = () => {
                 return timeA.localeCompare(timeB); // Use localeCompare for string comparison
             });
 
+            // Create a map to hold medications for each day
+            const medicationsForTimeMap = buildMedicationsMapPerKey("time",  medicationsForDay);
+            const times = [];
+            for (const time in medicationsForTimeMap) {
+                times.push(time);
+            }
+
+            times.sort((a, b) => {
+                return a.localeCompare(b); // Use localeCompare for string comparison
+            });
+
             calendar.push(
                 <div key={day} className="calendar-cell">
                     <div key={day} className="calendar-content">
                         <div className="day-number">{day}</div>
-                        {medicationsForDay.map(med => (
-                            <Tooltip key={med.id + "_" + med.dates[0].time} title={`Dosage: ${med.dosage}, Advise: ${med.advise}`} arrow>
-                                <div className="medication-entry">{med.dates[0].time} {med.name}</div>
-                            </Tooltip>
+                        {times.map(time => (
+                            <div className="medication-entry" key={time}><div>{time}</div> 
+                                <ul>
+                                {medicationsForTimeMap[time].map(med => (
+                                    <li key={med.id + "_" + med.dates[0].time}>{med.name}
+                                    <Tooltip title={`Dosage: ${med.dosage}, Advise: ${med.advise}`} arrow>
+                                            <InfoOutlinedIcon sx={{fontSize: '0.6rem'}}/>
+                                    </Tooltip>
+                                    </li>
+                                ))}
+                                </ul>
+                            </div>
                         ))}
                     </div>
                 </div>
