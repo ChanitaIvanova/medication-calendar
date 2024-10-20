@@ -71,3 +71,41 @@ def get_timesheet_by_id(timesheets_controller: TimesheetsController, id):
 
     """
     return timesheets_controller.get_timesheet_by_id(id)
+
+@timesheets.route('/timesheet/<id>', methods=['DELETE'])
+@login_required
+@inject
+def delete_timesheet(timesheets_controller: TimesheetsController, id):
+    """
+    .. http:delete:: /api/timesheets/timesheet/{id}
+
+        Delete a timesheet by ID.
+
+        Requires user to be logged in.
+
+        :param id: The ID of the timesheet to delete.
+        :type id: str
+        :statuscode 204: Timesheet deleted successfully
+        :statuscode 404: Timesheet not found
+    """
+    return timesheets_controller.delete_timesheet(id)
+
+@timesheets.route('/timesheet/<id>', methods=['PUT'])
+@login_required
+@inject
+def edit_timesheet(timesheets_controller: TimesheetsController, id):
+    """
+    .. http:put:: /api/timesheets/timesheet/{id}
+
+        Edit an existing timesheet.
+
+        Requires user to be logged in.
+
+        :param id: The ID of the timesheet to edit.
+        :type id: str
+        :param timesheets_controller: The controller used to edit the timesheet.
+        :type timesheets_controller: TimesheetsController
+        :statuscode 200: Timesheet updated successfully
+        :statuscode 404: Timesheet not found
+    """
+    return timesheets_controller.edit_timesheet(id)

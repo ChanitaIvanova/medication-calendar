@@ -67,6 +67,7 @@ class TimesheetService:
             response = self.openai_service.run(prompt, data_json)
             
             timesheet = json.loads(response)
+            print(timesheet)
             return timesheet
         except json.JSONDecodeError as e:
             logging.error(f"JSON decoding error: {str(e)}. Response: {response}")

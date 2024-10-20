@@ -17,3 +17,14 @@ export const createTimesheet = async (data: { medication_ids: string[], start_da
   });
   return response.data;
 };
+
+export const deleteTimesheet = async (id: string) => {
+  await axios.delete(`/api/timesheets/timesheet/${id}`, { withCredentials: true });
+};
+
+export const updateTimesheet = async (id: string, data: { medication_ids: string[], start_date: string, end_date: string }) => {
+  const response = await axios.put(`/api/timesheets/timesheet/${id}`, data, {
+    withCredentials: true,
+  });
+  return response.data;
+};

@@ -12,6 +12,7 @@ import EditMedication from './components/medication/EditMedication';
 import NewTimesheet from './components/timesheet/NewTimesheet';
 import TimesheetList from './components/timesheet/TimesheetList'; // Add this import
 import TimesheetCalendar from './components/timesheet/TimesheetCalendar'; // Add this import
+import EditTimesheet from './components/timesheet/EditTimesheet'; // Add this import
 
 const routes = createBrowserRouter([
     {
@@ -57,7 +58,11 @@ const routes = createBrowserRouter([
             {
                 path: "timesheet/:id",
                 element: <TimesheetCalendar />,
-            }
+            },
+            {
+                path: "edit-timesheet/:id",
+                element: <EditTimesheet />,
+            },
         ],
     }
 ]);
