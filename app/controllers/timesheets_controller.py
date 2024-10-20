@@ -188,3 +188,30 @@ class TimesheetsController:
             end_date=end_date_str,
             status=TimeSheetStatus.ACTIVE.value
         )
+
+    def get_active_timesheet(self):
+        """
+        Get the first active timesheet for the current user.
+
+        :return: A JSON response containing the active timesheet details or a message if none exists.
+        :rtype: Response
+        :statuscode 200: Successfully retrieved active timesheet
+        :statuscode 404: No active timesheet found
+        """
+        user_id = str(current_user.id)  # Get the current user's ID
+        timesheets = Timesheets.find_by_user_id(user_id)  # Fetch timesheets for the current user
+        
+        active_timesheet = next((ts for ts in timesheets if ts.status == TimeSheetStatus.ACTIVE.value), None)
+        
+        if active_timesheet:
+            # Fetch medication names and link them to each medication entry
+            medication_ids = [med.id for med in active_timesheet.medications]
+            medications = Medications.find_by_ids(medication_ids)
+            medication_dict = {str(med.id): med.name for med in medications}
+            
+            for med_entry in active_timesheet.medications:
+                med_entry.name = medication_dict.get(med_entry.id)  # Link name to each medication entry
+            
+            return jsonify(active_timesheet.asdict()), 200
+        
+        return make_response(jsonify({"message": "No active timesheet found."}), 404)

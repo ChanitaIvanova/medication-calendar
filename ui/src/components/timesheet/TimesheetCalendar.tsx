@@ -9,18 +9,24 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
-const TimesheetCalendar: React.FC = () => {
+interface TimesheetCalendarProps {
+    timesheet?: TimeSheet; // Accept timesheet object as a prop
+}
+
+const TimesheetCalendar: React.FC<TimesheetCalendarProps> = ({ timesheet }) => {
     const { id } = useParams<{ id: string }>();
-    const [timesheet, setTimesheet] = useState<TimeSheet | null>(null);
+    const [currentTimesheet, setCurrentTimesheet] = useState<TimeSheet | null>(timesheet);
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
     useEffect(() => {
         const fetchTimesheetData = async () => {
-            const data = await fetchTimesheet(id); // Use the service function
-            setTimesheet(data);
+            if (!currentTimesheet && id) {
+                const data = await fetchTimesheet(id); // Use the service function
+                setCurrentTimesheet(data);
+            }
         };
         fetchTimesheetData();
-    }, [id]);
+    }, [id, currentTimesheet]);
 
     const handleMonthChange = (direction: 'next' | 'prev') => {
         setCurrentMonth(prev => {
@@ -48,18 +54,18 @@ const TimesheetCalendar: React.FC = () => {
     }
 
     const renderCalendar = () => {
-        if (!timesheet) return null;
+        if (!currentTimesheet) return null;
 
         const monthDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
         const firstDay = (new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() + 6) % 7; // Adjust to start on Monday
         const calendar = [];
 
         // Create a map to hold medications for each day
-        const medicationsMap = buildMedicationsMapPerKey("date",  timesheet.medications);
+        const medicationsMap = buildMedicationsMapPerKey("date",  currentTimesheet.medications);
 
         // Fill the calendar with empty cells for days before the first day of the month
         for (let i = 0; i < firstDay; i++) {
-            calendar.push(<div key={`empty-${i}`} className="calendar-cell empty"></div>);
+            calendar.push(<div key={`empty-${i}`} className="calendar-cell empty"><div className="calendar-content"></div></div>);
         }
 
         // Fill the calendar with days of the month

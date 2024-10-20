@@ -109,3 +109,21 @@ def edit_timesheet(timesheets_controller: TimesheetsController, id):
         :statuscode 404: Timesheet not found
     """
     return timesheets_controller.edit_timesheet(id)
+
+@timesheets.route('timesheet//active', methods=['GET'])  # New route for active timesheet
+@login_required
+@inject
+def get_active_timesheet(timesheets_controller: TimesheetsController):
+    """
+    .. http:get:: /api/timesheets/timesheet/active
+
+        Get the first active timesheet for the current user.
+
+        Requires user to be logged in.
+
+        :param timesheets_controller: The controller used to retrieve the active timesheet.
+        :type timesheets_controller: TimesheetsController
+        :statuscode 200: Successfully retrieved active timesheet
+        :statuscode 404: No active timesheet found
+    """
+    return timesheets_controller.get_active_timesheet()

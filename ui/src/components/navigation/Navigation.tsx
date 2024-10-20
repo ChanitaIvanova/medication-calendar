@@ -8,10 +8,12 @@ import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import MedicationView from '../medication/MedicationView';
-import NewTimesheet from '../timesheet/NewTimesheet'; // Add this import
-import TimesheetList from '../timesheet/TimesheetList'; // Add this import
+import NewTimesheet from '../timesheet/NewTimesheet';
+import TimesheetList from '../timesheet/TimesheetList';
+import { Brightness4, Brightness7 } from '@mui/icons-material'; // Import icons
+import { createTheme } from '@mui/material/styles'; // Import createTheme
 
-function Navigation(): JSX.Element {
+function Navigation({ theme, setTheme }: { theme: any; setTheme: (theme: any) => void }): JSX.Element { // Accept theme and setTheme as props
     const { user, setUser, clearUser } = useUser();
     const navigate = useNavigate();
 
@@ -51,6 +53,11 @@ function Navigation(): JSX.Element {
         } catch (error) {
             console.error('Error during logout:', error);
         }
+    };
+
+    const toggleTheme = () => {
+        const newMode = theme.palette.mode === 'light' ? 'dark' : 'light';
+        setTheme(createTheme({ palette: { mode: newMode } }));
     };
 
     return (
@@ -166,12 +173,19 @@ function Navigation(): JSX.Element {
                                         </Button>
                                     </>
                                 )}
+                                <Button
+                                    color="primary"
+                                    variant="text"
+                                    size="small"
+                                    onClick={toggleTheme} // Add theme toggle button
+                                >
+                                    {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />} {/* Use theme prop */}
+                                </Button>
                             </Box>
                         </Toolbar>
                     </Container>
                 </AppBar>
             </div>
-
         </>
     )
 }

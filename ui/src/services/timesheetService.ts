@@ -28,3 +28,8 @@ export const updateTimesheet = async (id: string, data: { medication_ids: string
   });
   return response.data;
 };
+
+export const fetchActiveTimesheet = async () => {
+    const response = await axios.get('/api/timesheets/timesheet/active', { withCredentials: true });
+    return new TimeSheet(response.data);
+};

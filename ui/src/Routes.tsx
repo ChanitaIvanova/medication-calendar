@@ -13,12 +13,17 @@ import NewTimesheet from './components/timesheet/NewTimesheet';
 import TimesheetList from './components/timesheet/TimesheetList'; // Add this import
 import TimesheetCalendar from './components/timesheet/TimesheetCalendar'; // Add this import
 import EditTimesheet from './components/timesheet/EditTimesheet'; // Add this import
+import Home from './components/home/Home'; // Add this import
 
 const routes = createBrowserRouter([
     {
         path: "/",
         element: <App />,
         children: [
+            {
+                path: "",
+                element: <Home />, // Set Home as the root component
+            },
             {
                 path: "login",
                 element: <Login />,
