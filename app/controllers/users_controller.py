@@ -6,6 +6,7 @@ from flask_login import login_user, logout_user
 from pydantic import ValidationError, EmailStr
 from typing import Dict
 from email_validator import validate_email, EmailNotValidError
+from model.roles import Role
 
 
 class UsersController:
@@ -54,6 +55,10 @@ class UsersController:
                 return make_response(jsonify({"error": "Email already exists"}), 400)
             else:
                 return make_response(jsonify({"error": "Username already exists"}), 400)
+        
+        # Ensure role is set to USER by default
+        data['role'] = Role.USER
+        
         try:
             user = UserModel(**data)
             user.email = email
@@ -146,7 +151,12 @@ class UsersController:
                 user_logged_in = login_user(user)
                 if user_logged_in:
                     return (
-                        jsonify({"user_id": str(user.id), "username": user.username, "email": user.email}),
+                        jsonify({
+                            "user_id": str(user.id), 
+                            "username": user.username, 
+                            "email": user.email,
+                            "role": user.role.value
+                        }),
                         200,
                     )
                 else:

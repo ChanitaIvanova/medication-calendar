@@ -22,6 +22,23 @@ const Home: React.FC = () => {
         );
     }
 
+    if (user.role === 'admin') {
+        return (
+            <Card>
+                <CardContent>
+                    <Typography variant="h5">Admin Dashboard</Typography>
+                    <Typography variant="body2">Welcome to the admin dashboard. You can manage medications here.</Typography>
+                    <Button variant="contained" onClick={() => navigate('/medications')} sx={{ mr: 2, mt: 2 }}>
+                        View Medications
+                    </Button>
+                    <Button variant="contained" onClick={() => navigate('/new-medication')} sx={{ mt: 2 }}>
+                        Add New Medication
+                    </Button>
+                </CardContent>
+            </Card>
+        );
+    }
+
     return <Timesheet />;
 };
 

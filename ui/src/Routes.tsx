@@ -11,6 +11,7 @@ import MedicationView from './components/medication/MedicationView';
 import EditMedication from './components/medication/EditMedication';
 import Timesheet from './components/timesheet/Timesheet';
 import Home from './components/home/Home';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 const routes = createBrowserRouter([
     {
@@ -31,27 +32,27 @@ const routes = createBrowserRouter([
             },
             {
                 path: "profile",
-                element: <Profile />,
+                element: <ProtectedRoute allowedRoles={['admin', 'user']}><Profile /></ProtectedRoute>,
             },
             {
                 path: "medications",
-                element: <MedicationList />,
+                element: <ProtectedRoute allowedRoles={['admin']}><MedicationList /></ProtectedRoute>,
             },
             {
                 path: "new-medication",
-                element: <Medication />,
+                element: <ProtectedRoute allowedRoles={['admin']}><Medication /></ProtectedRoute>,
             },
             {
                 path: "medications/:id",
-                element: <MedicationView />,
+                element: <ProtectedRoute allowedRoles={['admin']}><MedicationView /></ProtectedRoute>,
             },
             {
                 path: "edit-medication/:id",
-                element: <EditMedication />,
+                element: <ProtectedRoute allowedRoles={['admin']}><EditMedication /></ProtectedRoute>,
             },
             {
                 path: "timesheet",
-                element: <Timesheet />,
+                element: <ProtectedRoute allowedRoles={['user']}><Timesheet /></ProtectedRoute>,
             }
         ],
     }

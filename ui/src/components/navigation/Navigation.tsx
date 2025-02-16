@@ -8,6 +8,7 @@ import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { Brightness4, Brightness7 } from '@mui/icons-material'; // Import icons
 import { createTheme } from '@mui/material/styles'; // Import createTheme
+import { UserRole } from '../../types/User';
 
 function Navigation({ theme, setTheme }: { theme: any; setTheme: (theme: any) => void }): JSX.Element { // Accept theme and setTheme as props
     const { user, setUser, clearUser } = useUser();
@@ -92,16 +93,18 @@ function Navigation({ theme, setTheme }: { theme: any; setTheme: (theme: any) =>
                                 >
                                     Home
                                 </Button>
-                                {user && (
+                                {user && user.role === 'user' && (
+                                    <Button
+                                        color="primary"
+                                        variant="text"
+                                        size="small"
+                                        onClick={() => navigate('/timesheet')}
+                                    >
+                                        Timesheet
+                                    </Button>
+                                )}
+                                {user && user.role === 'admin' && (
                                     <>
-                                        <Button
-                                            color="primary"
-                                            variant="text"
-                                            size="small"
-                                            onClick={() => navigate('/timesheet')}
-                                        >
-                                            Timesheet
-                                        </Button>
                                         <Button
                                             color="primary"
                                             variant="text"

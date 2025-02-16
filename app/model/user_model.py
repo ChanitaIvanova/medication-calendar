@@ -34,8 +34,8 @@ class UserModel(UserMixin, BaseModel):  # Inherit from BaseModel
         :type email: str
         :param password: The hashed password of the user.
         :type password: str
-        :param role: The role of the user, default is Role.USER.
-        :type role: Role
+        :param role: The role of the user, default is Role.USER. Can be Role enum or string.
+        :type role: Role or str
         :param _id: The unique identifier of the user, default is -1.
         :type _id: int or str
         """
@@ -44,7 +44,8 @@ class UserModel(UserMixin, BaseModel):  # Inherit from BaseModel
         self.username = username
         self.email = email
         self.password = password
-        self.role = role
+        # Convert string role to Role enum if necessary
+        self.role = Role(role) if isinstance(role, str) else role
 
     def set_id(self, id):
         """
