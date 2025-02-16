@@ -4,19 +4,6 @@ from typing import List
 from .base_model import BaseModel
 import logging
 
-class TimeSheetStatus(Enum):
-    """
-    Enumeration representing the status of a timesheet.
-
-    Attributes:
-        ACTIVE: Timesheet is currently active.
-        INACTIVE: Timesheet is not active.
-        EXPIRED: Timesheet has expired.
-    """
-    ACTIVE = "ACTIVE"
-    INACTIVE = "INACTIVE"
-    EXPIRED = "EXPIRED"
-
 @dataclass
 class MedicationEntry:
     """
@@ -33,7 +20,7 @@ class MedicationEntry:
     dosage: str
     advise: str
     dates: List[str]
-    name: str = ""  # Add this line to include the name of the medication
+    name: str = ""
 
 @dataclass
 class TimeSheetModel(BaseModel):
@@ -44,14 +31,12 @@ class TimeSheetModel(BaseModel):
         id (str): The unique identifier of the timesheet.
         user_id (str): The ID of the user associated with the timesheet.
         medications (List[MedicationEntry]): A list of medications included in the timesheet.
-        status (TimeSheetStatus): The status of the timesheet.
         start_date (str): The start date of the timesheet.
         end_date (str): The end date of the timesheet.
     """
     id: str
     user_id: str
     medications: List[MedicationEntry]
-    status: TimeSheetStatus
     start_date: str
     end_date: str
 
@@ -59,7 +44,6 @@ class TimeSheetModel(BaseModel):
         self,
         user_id: str,
         medications: List[MedicationEntry],
-        status: TimeSheetStatus,
         start_date: str,
         end_date: str,
         _id=-1,
@@ -72,8 +56,6 @@ class TimeSheetModel(BaseModel):
         :type user_id: str
         :param medications: A list of medications included in the timesheet.
         :type medications: List[MedicationEntry]
-        :param status: The status of the timesheet.
-        :type status: TimeSheetStatus
         :param start_date: The start date of the timesheet.
         :type start_date: str
         :param end_date: The end date of the timesheet.
@@ -91,7 +73,6 @@ class TimeSheetModel(BaseModel):
             if isinstance(med, MedicationEntry): 
                 self.medications.append(med) 
             else: self.medications.append(MedicationEntry(**med)) 
-        self.status = status
         self.start_date = start_date
         self.end_date = end_date
 
@@ -122,7 +103,6 @@ class TimeSheetModel(BaseModel):
         """
         dictionary = asdict(self)
         dictionary.update({'id': str(self._id)})
-        dictionary['status'] = self.status
         dictionary['medications'] = [asdict(med) for med in self.medications]
         return dictionary
 
@@ -130,7 +110,7 @@ class TimeSheetModel(BaseModel):
         """
         Log the details of the timesheet using the logging module.
         """
-        logging.info(f"TimeSheet: User ID: {self.user_id}, Status: {self.status.value}")
+        logging.info(f"TimeSheet: User ID: {self.user_id}")
         for med in self.medications:
             logging.info(f"  Medication: {med.id}, Dosage: {med.dosage}, Dates: {med.dates}")
         logging.info(f"Advise: {self.advise}")

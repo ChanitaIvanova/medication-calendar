@@ -1,55 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { fetchActiveTimesheet } from '../../services/timesheetService'; // New service function
+import React from 'react';
+import { useUser } from '../../context/UserContext';
+import { Card, CardContent, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, Typography, Button, CircularProgress } from '@mui/material';
-import TimesheetCalendar from '../timesheet/TimesheetCalendar';
+import Timesheet from '../timesheet/Timesheet';
 
 const Home: React.FC = () => {
-    const [activeTimesheet, setActiveTimesheet] = useState(null);
-    const [loading, setLoading] = useState(true); // New loading state
+    const { user } = useUser();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const loadActiveTimesheet = async () => {
-            setLoading(true); // Set loading to true when starting to fetch
-            try {
-                const timesheet = await fetchActiveTimesheet(); // Fetch the active timesheet
-                setActiveTimesheet(timesheet);
-            } catch (err) {
-                console.error('Failed to load active timesheet');
-            } finally {
-                setLoading(false); // Set loading to false after fetching
-            }
-        };
-
-        loadActiveTimesheet();
-    }, []);
-
-    if (loading) {
+    if (!user) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <CircularProgress /> {/* Loading spinner */}
-            </div>
+            <Card>
+                <CardContent>
+                    <Typography variant="h5">Welcome to Medication Timesheet</Typography>
+                    <Typography variant="body2">Please log in to view your medication schedule.</Typography>
+                    <Button variant="contained" onClick={() => navigate('/login')}>
+                        Login
+                    </Button>
+                </CardContent>
+            </Card>
         );
     }
 
-    return (
-        <div>
-            {activeTimesheet ? (
-                <TimesheetCalendar timesheet={activeTimesheet} /> // Pass the timesheet directly
-            ) : (
-                <Card>
-                    <CardContent>
-                        <Typography variant="h5">No Active Timesheet</Typography>
-                        <Typography variant="body2">You don't have an active timesheet. Please create one.</Typography>
-                        <Button variant="contained" onClick={() => navigate('/new-timesheet')}>
-                            New Timesheet
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
-        </div>
-    );
+    return <Timesheet />;
 };
 
 export default Home;

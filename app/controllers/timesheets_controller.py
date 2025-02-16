@@ -5,7 +5,7 @@ from services.medication_service import MedicationService
 from services.timesheet_service import TimesheetService
 from db.timesheets import Timesheets
 from db.medications import Medications
-from model.timesheet_model import TimeSheetModel, MedicationEntry, TimeSheetStatus
+from model.timesheet_model import TimeSheetModel, MedicationEntry
 from injector import inject
 from datetime import datetime
 
@@ -185,33 +185,36 @@ class TimesheetsController:
             user_id=user_id or str(current_user.id),
             medications=medication_entries,
             start_date=start_date_str,
-            end_date=end_date_str,
-            status=TimeSheetStatus.ACTIVE.value
+            end_date=end_date_str
         )
 
-    def get_active_timesheet(self):
+    def get_timesheet(self):
         """
-        Get the first active timesheet for the current user.
+        Get the single timesheet for the current user.
 
-        :return: A JSON response containing the active timesheet details or a message if none exists.
+        :return: A JSON response containing the timesheet details.
         :rtype: Response
-        :statuscode 200: Successfully retrieved active timesheet
-        :statuscode 404: No active timesheet found
+        :statuscode 200: Successfully retrieved timesheet
+        :statuscode 404: No timesheet found
+        :statuscode 409: Multiple timesheets found
         """
         user_id = str(current_user.id)  # Get the current user's ID
         timesheets = Timesheets.find_by_user_id(user_id)  # Fetch timesheets for the current user
         
-        active_timesheet = next((ts for ts in timesheets if ts.status == TimeSheetStatus.ACTIVE.value), None)
+        if len(timesheets) > 1:
+            return make_response(jsonify({"error": "Multiple timesheets found. Only one timesheet allowed per user."}), 409)
         
-        if active_timesheet:
-            # Fetch medication names and link them to each medication entry
-            medication_ids = [med.id for med in active_timesheet.medications]
-            medications = Medications.find_by_ids(medication_ids)
-            medication_dict = {str(med.id): med.name for med in medications}
+        if len(timesheets) == 0:
+            return make_response(jsonify({"message": "No timesheet found."}), 404)
             
-            for med_entry in active_timesheet.medications:
-                med_entry.name = medication_dict.get(med_entry.id)  # Link name to each medication entry
-            
-            return jsonify(active_timesheet.asdict()), 200
+        timesheet = timesheets[0]
         
-        return make_response(jsonify({"message": "No active timesheet found."}), 404)
+        # Fetch medication names and link them to each medication entry
+        medication_ids = [med.id for med in timesheet.medications]
+        medications = Medications.find_by_ids(medication_ids)
+        medication_dict = {str(med.id): med.name for med in medications}
+        
+        for med_entry in timesheet.medications:
+            med_entry.name = medication_dict.get(med_entry.id)  # Link name to each medication entry
+        
+        return jsonify(timesheet.asdict()), 200

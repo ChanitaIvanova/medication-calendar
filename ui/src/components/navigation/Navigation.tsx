@@ -6,10 +6,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import { Routes, Route } from 'react-router-dom';
-import MedicationView from '../medication/MedicationView';
-import NewTimesheet from '../timesheet/NewTimesheet';
-import TimesheetList from '../timesheet/TimesheetList';
 import { Brightness4, Brightness7 } from '@mui/icons-material'; // Import icons
 import { createTheme } from '@mui/material/styles'; // Import createTheme
 
@@ -102,17 +98,9 @@ function Navigation({ theme, setTheme }: { theme: any; setTheme: (theme: any) =>
                                             color="primary"
                                             variant="text"
                                             size="small"
-                                            onClick={() => navigate('/timesheets')} // Add this button
+                                            onClick={() => navigate('/timesheet')}
                                         >
-                                            Timesheets
-                                        </Button>
-                                        <Button
-                                            color="primary"
-                                            variant="text"
-                                            size="small"
-                                            onClick={() => navigate('/new-timesheet')} // Add this button
-                                        >
-                                            New Timesheet
+                                            Timesheet
                                         </Button>
                                         <Button
                                             color="primary"

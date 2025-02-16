@@ -1,5 +1,5 @@
 from db.mongo_db_client import MongoDBClient
-from model.timesheet_model import TimeSheetModel, MedicationEntry, TimeSheetStatus
+from model.timesheet_model import TimeSheetModel, MedicationEntry
 from db.collection_wrapper import CollectionWrapper
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -133,24 +133,6 @@ class Timesheets:
         return collection.update_one(
             {"_id": ObjectId(timesheet_id)},
             {"$push": {"medications": medication_entry.__dict__}}
-        )
-
-    @staticmethod
-    def update_status(timesheet_id, new_status: TimeSheetStatus):
-        """
-        Update the status of a timesheet.
-
-        :param timesheet_id: The ID of the timesheet to update.
-        :type timesheet_id: str
-        :param new_status: The new status to set for the timesheet.
-        :type new_status: TimeSheetStatus
-        :return: The result of the update operation.
-        :rtype: UpdateResult
-        """
-        collection = Timesheets.__get_collection()
-        return collection.update_one(
-            {"_id": ObjectId(timesheet_id)},
-            {"$set": {"status": new_status.value}}
         )
 
     @staticmethod

@@ -6,8 +6,8 @@ export const fetchTimesheets = async () => {
   return response.data.map((timesheet: TimesheetBe) => new TimeSheet(timesheet));
 };
 
-export const fetchTimesheet = async (id: string) => {
-  const response = await axios.get(`/api/timesheets/timesheet/${id}`, { withCredentials: true });
+export const fetchTimesheet = async () => {
+  const response = await axios.get('/api/timesheets/timesheet', { withCredentials: true });
   return new TimeSheet(response.data);
 };
 
@@ -22,11 +22,11 @@ export const deleteTimesheet = async (id: string) => {
   await axios.delete(`/api/timesheets/timesheet/${id}`, { withCredentials: true });
 };
 
-export const updateTimesheet = async (id: string, data: { medication_ids: string[], start_date: string, end_date: string }) => {
-  const response = await axios.put(`/api/timesheets/timesheet/${id}`, data, {
+export const updateTimesheet = async (data: { medication_ids: string[], start_date: string, end_date: string }) => {
+  const response = await axios.put('/api/timesheets/timesheet', data, {
     withCredentials: true,
   });
-  return response.data;
+  return new TimeSheet(response.data);
 };
 
 export const fetchActiveTimesheet = async () => {

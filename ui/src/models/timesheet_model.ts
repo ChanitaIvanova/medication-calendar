@@ -1,9 +1,3 @@
-export enum TimeSheetStatus {
-    ACTIVE = "ACTIVE",
-    INACTIVE = "INACTIVE",
-    EXPIRED = "EXPIRED",
-}
-
 export interface MedicationDate {
     date: string;
     time: string;
@@ -50,14 +44,12 @@ export class TimeSheet {
     id: string;
     user_id: string;
     medications: Medication[];
-    status: TimeSheetStatus;
     start_date: string; // Date string
     end_date: string;   // Date string
 
     constructor(timesheet: TimesheetBe) {
         this.id = timesheet.id;
         this.user_id = timesheet.user_id;
-        this.status = timesheet.status;
         this.start_date = timesheet.start_date;
         this.end_date = timesheet.end_date;
         this.medications = timesheet.medications.map(med => new Medication(med));

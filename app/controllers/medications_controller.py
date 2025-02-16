@@ -4,6 +4,9 @@ from flask import jsonify, request, make_response
 from typing import Dict
 from flask_login import current_user, login_required
 from services.medication_service import MedicationService
+from services.timesheet_service import TimesheetService
+from db.timesheets import Timesheets
+from model.timesheet_model import TimeSheetModel, MedicationEntry
 from injector import inject
 import json
 
@@ -13,14 +16,15 @@ class MedicationsController:
     """
     
     @inject
-    def __init__(self, medication_service: MedicationService):
+    def __init__(self, medication_service: MedicationService, timesheet_service: TimesheetService):
         """
-        Initialize the MedicationsController with a MedicationService instance.
+        Initialize the MedicationsController with service instances.
 
         :param medication_service: The service used to manage medication-related operations.
-        :type medication_service: MedicationService
+        :param timesheet_service: The service used to manage timesheet-related operations.
         """
         self.medication_service = medication_service
+        self.timesheet_service = timesheet_service
 
     def create_medication(self):
         """
@@ -121,6 +125,7 @@ class MedicationsController:
         """
         result = Medications.delete(medication_id)
         if result.deleted_count:
+            self.__update_user_timesheet()
             return jsonify({"deleted_count": result.deleted_count})
         return make_response(jsonify({"error": "Medication not found"}), 404)
     
@@ -151,6 +156,7 @@ class MedicationsController:
         )
         
         saved_medication = Medications.add(medication)
+        self.__update_user_timesheet()
         return saved_medication.to_json(), 201
 
     def update_medication(self, medication_id):
@@ -191,6 +197,7 @@ class MedicationsController:
         
         result = Medications.update(updated_medication)
         if result.modified_count:
+            self.__update_user_timesheet()
             return jsonify({"message": "Medication updated successfully"}), 200
         return make_response(jsonify({"error": "Failed to update medication"}), 500)
 
@@ -219,3 +226,98 @@ class MedicationsController:
         medications = Medications.find_by_user_id(user_id)
         medications_dict = [MedicationModel(**med) for med in medications]
         return jsonify([{"id": str(med._id), "name": med.name} for med in medications_dict])
+
+    def __update_user_timesheet(self):
+        """
+        Helper method to update or create user's timesheet after medication changes.
+        """
+        user_id = str(current_user.id)
+        timesheets = Timesheets.find_by_user_id(user_id)
+        
+        # Get all user's medications
+        medications = Medications.find_by_user_id(user_id)
+        if not medications:
+            # If user has no medications, delete any existing timesheet
+            if timesheets:
+                for ts in timesheets:
+                    Timesheets.delete(ts.id)
+            return
+        medications_dict = [MedicationModel(**med) for med in medications]
+        medication_ids = [str(med.id) for med in medications_dict]
+        
+        if not timesheets:
+            # Create new timesheet if none exists
+            from datetime import datetime, timedelta
+            start_date = datetime.now().date()
+            end_date = start_date + timedelta(days=30)  # Default to 30 days
+            
+            timesheet_data = {
+                'medication_ids': medication_ids,
+                'start_date': start_date.isoformat(),
+                'end_date': end_date.isoformat()
+            }
+            
+            new_timesheet = self._build_timesheet(timesheet_data)
+            Timesheets.add(new_timesheet)
+        else:
+            # Update existing timesheet with current medications
+            for timesheet in timesheets:
+                timesheet_data = {
+                    'medication_ids': medication_ids,
+                    'start_date': timesheet.start_date,
+                    'end_date': timesheet.end_date
+                }
+                updated_timesheet = self._build_timesheet(timesheet_data)
+                Timesheets.update(updated_timesheet)
+
+    def _build_timesheet(self, data, user_id=None):
+        """
+        Build a timesheet based on provided data.
+
+        :param data: Dictionary containing medication_ids, start_date, and end_date
+        :param user_id: Optional user ID for the timesheet
+        :return: A new TimeSheetModel instance
+        """
+        medication_ids = data['medication_ids']
+        start_date = data['start_date']
+        end_date = data['end_date']
+
+        # Retrieve medications from the database
+        medications = [Medications.find(med_id) for med_id in medication_ids]
+
+        # Prepare data for timesheet service
+        medications_data = [
+            {
+                "id": str(med.id),
+                "name": med.name,
+                "dosage_schedule": med.dosage_schedule,
+                "objective": med.objective
+            } for med in medications if med
+        ]
+
+        # Generate timesheet using service
+        timesheet_data = self.timesheet_service.build_timesheet(
+            medications_data, 
+            start_date,
+            end_date
+        )
+
+        # Create medication entries
+        medication_entries = []
+        for med in timesheet_data["medications"]:
+            if med:
+                medication_entries.append(
+                    MedicationEntry(
+                        id=med["id"],
+                        dosage=med["dosage"],
+                        dates=med["dates"],
+                        advise=med["advise"]
+                    )
+                )
+
+        return TimeSheetModel(
+            user_id=user_id or str(current_user.id),
+            medications=medication_entries,
+            start_date=start_date,
+            end_date=end_date
+        )
