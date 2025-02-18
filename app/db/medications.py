@@ -132,15 +132,55 @@ class Medications:
         return collection.delete_one({"_id": ObjectId(id)})
 
     @staticmethod
-    def findAll():
+    def find_all(page=None, per_page=None, sort_field=None, sort_direction=None, filters=None):
         """
-        Find all medications in the database.
+        Find all medications with optional pagination, sorting, and filtering.
+        If no parameters are provided, returns all medications.
 
-        :return: A list of all medications.
-        :rtype: list
+        :param page: The page number for pagination.
+        :type page: int, optional
+        :param per_page: The number of items per page.
+        :type per_page: int, optional
+        :param sort_field: The field by which to sort the results.
+        :type sort_field: str, optional
+        :param sort_direction: The direction of sorting, either 'asc' or 'desc'.
+        :type sort_direction: str, optional
+        :param filters: Dictionary of filters to apply to the query.
+        :type filters: dict, optional
+        :return: If pagination is used, returns (total_count, medications), otherwise just medications.
+        :rtype: tuple or list
+        :raises ValueError: If pagination parameters are invalid.
         """
         collection = Medications.__get_collection()
-        return list(collection.find())
+        query = {}
+        
+        # Apply filters if any
+        if filters:
+            for field, value in filters.items():
+                if value:
+                    query[field] = {'$regex': value, '$options': 'i'}
+
+        # Apply sorting
+        sort_params = [('_id', DESCENDING)]
+        if sort_field and sort_direction:
+            sort_params.insert(0, (sort_field, ASCENDING if sort_direction == 'asc' else DESCENDING))
+
+        # If no pagination is requested, return all results
+        if page is None or per_page is None:
+            return list(collection.find(query).sort(sort_params))
+
+        # Validate pagination parameters
+        if not isinstance(page, int) or page <= 0:
+            raise ValueError("Page must be a positive integer.")
+        if not isinstance(per_page, int) or per_page <= 0:
+            raise ValueError("Per page must be a positive integer.")
+
+        # Apply pagination
+        total_count = collection.count_documents(query)
+        skip = (page - 1) * per_page
+        medications = list(collection.find(query).sort(sort_params).skip(skip).limit(per_page))
+
+        return total_count, medications
 
     @staticmethod
     def update(medication: MedicationModel):

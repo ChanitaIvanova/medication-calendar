@@ -5,11 +5,11 @@ import logging
 @dataclass
 class MedicationModel(BaseModel):
     """
-    A data model representing a medication.
+    A data model representing a medication in the system catalog.
 
     Attributes:
         id (str): The unique identifier of the medication.
-        user_id (str): The ID of the user associated with the medication.
+        user_id (str): The ID of the admin user who added the medication.
         name (str): The name of the medication.
         contents (str): The contents or ingredients of the medication.
         objective (str): The objective or purpose of the medication.
@@ -23,7 +23,6 @@ class MedicationModel(BaseModel):
     objective: str
     side_effects: str
     dosage_schedule: str
-
     def __init__(
         self,
         name: str,
@@ -48,7 +47,7 @@ class MedicationModel(BaseModel):
         :type side_effects: str
         :param dosage_schedule: The dosage schedule for the medication.
         :type dosage_schedule: str
-        :param user_id: The ID of the user associated with the medication.
+        :param user_id: The ID of the admin user who added the medication.
         :type user_id: str
         :param _id: The unique identifier of the medication, default is -1.
         :type _id: int or str
@@ -98,5 +97,7 @@ class MedicationModel(BaseModel):
         Log the details of the medication using the logging module.
         """
         logging.info(
-            f"Medication: {self.name}\nContents: {self.contents}\nObjective: {self.objective}\nSide Effects: {self.side_effects}\nDosage: {self.dosage_schedule}"
+            f"Medication: {self.name}\nAdded by: {self.user_id}\n"
+            f"Contents: {self.contents}\nObjective: {self.objective}\n"
+            f"Side Effects: {self.side_effects}\nDosage Schedule: {self.dosage_schedule}"
         )

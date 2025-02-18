@@ -9,6 +9,8 @@ from db.timesheets import Timesheets
 from model.timesheet_model import TimeSheetModel, MedicationEntry
 from injector import inject
 import json
+from pymongo import DESCENDING, ASCENDING
+from model.user_medication_model import UserMedicationModel
 
 class MedicationsController:
     """
@@ -156,7 +158,6 @@ class MedicationsController:
         )
         
         saved_medication = Medications.add(medication)
-        self.__update_user_timesheet()
         return saved_medication.to_json(), 201
 
     def update_medication(self, medication_id):
@@ -169,7 +170,7 @@ class MedicationsController:
         :rtype: Response
         :statuscode 200: Medication updated successfully
         :statuscode 400: Bad request (e.g., invalid JSON format)
-        :statuscode 404: Medication not found or unauthorized
+        :statuscode 404: Medication not found
         :statuscode 500: Failed to update medication
         """
         try:
@@ -179,11 +180,9 @@ class MedicationsController:
         except Exception as e:
             return make_response(jsonify({"error": f"Failed to parse JSON: {str(e)}"}), 400)
         
-        user_id = str(current_user.id)
-        
         medication = Medications.find(medication_id)
-        if not medication or not hasattr(medication, 'user_id') or medication.user_id != user_id:
-            return make_response(jsonify({"error": "Medication not found or unauthorized"}), 404)
+        if not medication:
+            return make_response(jsonify({"error": "Medication not found"}), 404)
         
         updated_medication = MedicationModel(
             name=data['name'],
@@ -191,41 +190,61 @@ class MedicationsController:
             objective=data['objective'],
             side_effects=data['sideEffects'],
             dosage_schedule=data['dosageSchedule'],
-            user_id=user_id,
+            user_id=medication.user_id,  # Preserve the original creator's ID
             _id=medication_id
         )
         
         result = Medications.update(updated_medication)
         if result.modified_count:
-            self.__update_user_timesheet()
             return jsonify({"message": "Medication updated successfully"}), 200
         return make_response(jsonify({"error": "Failed to update medication"}), 500)
 
     @login_required
-    def get_medications(self):
-        """
-        Get all medications.
-
-        :return: A JSON response containing the list of all medications.
-        :rtype: Response
-        :statuscode 200: Successfully retrieved medications
-        """
-        medications = Medications.findAll()
-        return jsonify([med.asdict() for med in medications])
-
-    @login_required
     def get_user_medications(self):
         """
-        Get all medications for the current user.
+        Get all medications assigned to the current user.
 
-        :return: A JSON response containing the list of medications for the user.
+        :return: A JSON response containing the list of medications assigned to the user.
         :rtype: Response
         :statuscode 200: Successfully retrieved user medications
         """
         user_id = str(current_user.id)
-        medications = Medications.find_by_user_id(user_id)
-        medications_dict = [MedicationModel(**med) for med in medications]
-        return jsonify([{"id": str(med._id), "name": med.name} for med in medications_dict])
+        total_count, user_medications = UserMedicationModel.find_by_user_id(user_id)
+        
+        # Convert to list of UserMedicationModel instances
+        user_medication_models = [UserMedicationModel(**med) for med in user_medications]
+        
+        # Get all unique medication IDs
+        medication_ids = [med.medication_id for med in user_medication_models]
+        
+        # Fetch the actual medication details
+        medications = Medications.find_by_ids(medication_ids)
+        
+        # Create a map of medication details
+        medication_map = {str(med.get_id()): med for med in medications}
+        
+        # Combine medication details with user-specific medication data
+        result = []
+        for user_med in user_medication_models:
+            med = medication_map.get(user_med.medication_id)
+            if med:
+                result.append({
+                    "id": str(user_med.get_id()),
+                    "medication_id": str(med.get_id()),
+                    "name": med.name,
+                    "contents": med.contents,
+                    "objective": med.objective,
+                    "side_effects": med.side_effects,
+                    "dosage_schedule": user_med.dosage_schedule,
+                    "start_date": user_med.start_date.isoformat(),
+                    "end_date": user_med.end_date.isoformat(),
+                    "notes": user_med.notes
+                })
+        
+        return jsonify({
+            'medications': result,
+            'total_count': total_count
+        })
 
     def __update_user_timesheet(self):
         """
@@ -321,3 +340,41 @@ class MedicationsController:
             start_date=start_date,
             end_date=end_date
         )
+
+    @login_required
+    def get_all_medications(self, page, per_page, sort_field=None, sort_direction=None, **filters):
+        """
+        Get a list of all medications with optional filters and pagination.
+
+        :param page: The page number for pagination.
+        :type page: int
+        :param per_page: The number of items per page.
+        :type per_page: int
+        :param sort_field: The field to sort results by.
+        :type sort_field: str, optional
+        :param sort_direction: The direction of sorting (asc or desc).
+        :type sort_direction: str, optional
+        :param filters: Optional filters for medication attributes.
+        :type filters: dict
+        :return: A JSON response containing the list of medications and pagination details.
+        :rtype: Response
+        :statuscode 200: Successfully retrieved medications
+        :statuscode 400: Bad request (e.g., invalid pagination parameters)
+        """
+        try:
+            total_count, medications = Medications.find_all(
+                page=page,
+                per_page=per_page,
+                sort_field=sort_field,
+                sort_direction=sort_direction,
+                filters=filters
+            )
+        except ValueError as e:
+            return make_response(jsonify({"error": str(e)}), 400)
+        
+        return jsonify({
+            'medications': [json.loads(MedicationModel(**med).to_json()) for med in medications],
+            'total_count': total_count,
+            'page': page,
+            'per_page': per_page
+        })
